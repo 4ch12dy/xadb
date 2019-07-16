@@ -21,7 +21,7 @@ adb pcat     [remote-file]                       copy device file to local
 adb -h       show this help usage 
 ```
 
-说明：adb兼容内置的所有命令
+说明：adb兼容内置的所有命令。在分别在pixel2 Android8 和pixel3 Android9上面测试通过。
 
 `mprop`只编译了64位的版本，若你为32位的设备，可以自行编译。
 
