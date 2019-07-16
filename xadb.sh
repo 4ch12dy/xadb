@@ -476,8 +476,9 @@ function xadb(){
 		printf "adb %-8s %-35s %-20s \n" "app" "[sign/so/pid/apk/debug/dump]" "show current app, debug and dump dex "
 		printf "adb %-8s %-35s %-20s \n" "xlog" "[package]" "logcat just current app or special package"
 		printf "adb %-8s %-35s %-20s \n" "debug" "[ida/ida64,lldb/lldb64, gdb/gdb64]" "open debug and setup ida/lldb/gdb debug enviroment"
-		printf "adb %-8s %-35s %-20s \n" "frida/64" "" "start frida server on device"
+		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
 		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local"
+		printf "adb %-8s %-35s		 \n" "-h" "show this help usage"
 		return
 	fi
 
