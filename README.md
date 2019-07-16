@@ -23,6 +23,10 @@ adb -h       show this help usage
 
 说明：adb兼容内置的所有命令
 
+`mprop`只编译了64位的版本，若你为32位的设备，可以自行编译。
+
+在source目录下面提供了mprop的源码及build脚本
+
  #### Screeshot
 
 ![adb-device](https://github.com/4ch12dy/xadb/blob/master/screenshot/adb-device.png?raw=true)
