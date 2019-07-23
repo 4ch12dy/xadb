@@ -7,7 +7,7 @@
 #/_/ \_\ /_/    \_\ |_____/  |____/ 
 
 #android_dir="$xia0/android/"
-ROOT_DIR=`cat ~/.xadb/rootdir`
+XADB_ROOT_DIR=`cat ~/.xadb/rootdir`
 
 ANDROID_SDK_PATH=`cat ~/.xadb/sdk-path`
 
@@ -51,17 +51,17 @@ function checkxia0(){
 
 	ret=`$ADB -d shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0"`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$ROOT_DIR/frida" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/frida" /sdcard/xia0
 	fi
 
 	ret=`$ADB -d shell "[ -d /sdcard/xia0/tools ] && echo 1 || echo 0"`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$ROOT_DIR/tools" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/tools" /sdcard/xia0
 	fi
 
 	ret=`$ADB -d shell "[ -d /sdcard/xia0/debug-server ] && echo 1 || echo 0"`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$ROOT_DIR/debug-server" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
 	fi
 
 }
