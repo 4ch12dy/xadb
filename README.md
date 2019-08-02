@@ -27,6 +27,8 @@ adb -h       show this help usage
 
 在source目录下面提供了mprop的源码及build脚本
 
+**关于脱壳，之前基于frida的脱壳脚本只能脱一代壳且兼容性不高，就暂时没放出来。如果有大佬有比较好的方式，可以pr或者联系我完善下这部分。**
+
  #### Screeshot
 
 ![adb-device](https://github.com/4ch12dy/xadb/blob/master/screenshot/adb-device.png?raw=true)
