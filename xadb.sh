@@ -256,7 +256,7 @@ function xadb(){
 		echo "====>[gdb]$ handle SIG32 nostop noprint"
 		echo "====>[lldb]$ platform select remote-android"
 		echo "====>[lldb]$ platform connect unix-abstract-connect:///data/local/tmp/debug.sock"
-		echo "====>[lldb]$ process attach --pid=14396"
+		echo "====>[lldb]$ process attach --pid=14396 or platform process attach -p 8098"
 		echo "**********************************************************************************"
 
 		# 判断是否开启了调试
@@ -367,7 +367,8 @@ function xadb(){
 				
 				xadb sudo "chmod 777 /data/local/tmp/lldb-server"
 
-				xadb shell /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
+				# xadb shell /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
+				xadb sudo /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
 				return
 				;;
 
@@ -380,7 +381,8 @@ function xadb(){
 				
 				xadb sudo "chmod 777 /data/local/tmp/lldb-server64"
 
-				xadb shell /data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock
+				# xadb shell /data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock
+				xadb sudo "/data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
 				;;
 			* )
 				elog "\"$2\" debug server not found."
