@@ -129,8 +129,7 @@ function xadb(){
 
 				now=`timeNow`
 
-				# xadb pull "$base_apk" "$APP_ID-$now.apk"
-				xadb shell su -c "cat $base_apk" > "$APP_ID-$now.apk"
+				xadb pull $base_apk $APP_ID-$now.apk 1>/dev/null
 				current_dir=`pwd`
 				echo "$current_dir/$APP_ID-$now.apk"
 				;;
@@ -148,8 +147,6 @@ function xadb(){
 					elog "$APP_ID apk file can not copy from device"
 					return
 				fi
-
-				# echo $apk_file
 				SIGN_RSA=`unzip -l $apk_file | grep "META-INF.*\.RSA" | awk  '{printf $4}'`
 				# echo $SIGN_RSA
 				unzip -p $apk_file $SIGN_RSA | keytool -printcert
