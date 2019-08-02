@@ -368,7 +368,7 @@ function xadb(){
 				xadb sudo "chmod 777 /data/local/tmp/lldb-server"
 
 				# xadb shell /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
-				xadb sudo /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
+				xadb sudo "/data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
 				return
 				;;
 
