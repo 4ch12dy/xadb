@@ -27,11 +27,14 @@ function checkSDKPath(){
 
 if [[ -n "$1" ]];then 
 	ANDROID_SDK_PATH=$1
-	checkSDKPath $ANDROID_SDK_PATH
+elif [[ -e ~/Library/Android/sdk ]];then
+	ANDROID_SDK_PATH=~/Library/Android/sdk
 else
 	xlog "You should Set the Android SDK Path."
 	exit
 fi
+
+checkSDKPath $ANDROID_SDK_PATH
 
 if [[ ! -d ~/.xadb ]]; then
 	mkdir -p ~/.xadb
