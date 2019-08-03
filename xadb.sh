@@ -13,6 +13,12 @@ ANDROID_SDK_PATH=`cat ~/.xadb/sdk-path`
 
 ADB="$ANDROID_SDK_PATH/platform-tools/adb"
 
+# If update.lock exsist : there is new version for updating. use adb update
+UPDATE_LOCK_FILE="$HOME/.xadb/update.lock"
+
+# last-check-update.time : the last timestamp of checking update
+LAST_CHECKUPDATE_TIMEFILE="$HOME/.xadb/last-check-update.time"
+
 function ilog(){
 
 	echo -e "\033[32m[I]:$1 \033[0m"
@@ -22,6 +28,10 @@ function elog(){
 	
 	echo -e "\033[31m[E]:$1 \033[0m"
 	
+}
+
+function DLOG(){
+	echo "[DEBUG]:$1" > /dev/null
 }
 
 function timeNow(){
@@ -37,6 +47,36 @@ function checkConnect(){
 		return
 	fi
 	echo "1"
+}
+
+function XADBCheckUpdate(){
+	if [[ ! -f $LAST_CHECKUPDATE_TIMEFILE ]]; then 
+
+		DLOG "LAST_CHECKUPDATE_TIMEFILE Not Exsist."
+		sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $UPDATE_LOCK_FILE)"
+		echo `date '+%s'` > $LAST_CHECKUPDATE_TIMEFILE
+
+	else
+		DLOG "LAST_CHECKUPDATE_TIMEFILE Exsist."
+		lastTimestamp=`cat $LAST_CHECKUPDATE_TIMEFILE`
+		nowTimestamp=`date '+%s'`
+		oneDayTimestamp=86400
+		needTimestamp=`expr $nowTimestamp - $lastTimestamp`
+		# echo $lastTimestamp $nowTimestamp $needTimestamp
+		# Last check update is one day ago?
+		if [[ $needTimestamp >  $oneDayTimestamp ]]; then 
+			sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $UPDATE_LOCK_FILE)"
+			echo `date '+%s'` > $LAST_CHECKUPDATE_TIMEFILE
+		fi
+	fi
+
+
+	if [[ -f $UPDATE_LOCK_FILE ]]; then
+
+		ilog "XADB has updated! Run \"adb update\" get new version :)"
+	fi
+
+	DLOG "Update Check Done!"
 }
 
 
@@ -469,6 +509,14 @@ function xadb(){
 		xadb logcat --pid=$APPPID
 		return
 	fi
+
+
+	if [ "$1" = "update" ];then
+		DLOG "Run adb update"
+		sh -c "cd $XADB_ROOT_DIR;git pull;"
+		return
+	fi
+
  	# usage 
 	if [[  "$1" = "-h" ]]; then
 		printf "adb %-8s %-35s %-20s \n" "device" "[imei]" "show connected android device basic info" 
@@ -490,6 +538,7 @@ function adb(){
 		elog "no device found, please check connect state"
 		return
 	fi
+	XADBCheckUpdate
 	checkxia0
 	xadb $@
 }
