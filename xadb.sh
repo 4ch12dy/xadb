@@ -39,9 +39,9 @@ function XADBTimeNow(){
 	echo $now
 }
 
-function DeviceState(){
+function XADBDeviceState(){
 	device=`$ADB -d get-state 2>/dev/null`
-	echo device
+	echo $device
 
 }
 
@@ -536,7 +536,7 @@ function xadb(){
 
 function adb(){
 	if [[  "$1" != "update"  ]] && [[  "$1" != "-h"  ]]; then
-		if [[  $(DeviceState)!="device" ]]; then
+		if [[  $(XADBDeviceState) != "device" ]]; then
 			# XADBELOG "no device found, please check connect state"
 			XADBILOG "The device not found, now use original adb"
 			$ADB -d $@
