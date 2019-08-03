@@ -39,6 +39,11 @@ function XADBTimeNow(){
 	echo $now
 }
 
+function DeviceState(){
+	device=`$ADB -d get-state 2>/dev/null`
+	echo device
+
+}
 
 function XADBCheckUpdate(){
 	if [[ ! -f $XADB_LAST_CHECKUPDATE_TIMEFILE ]]; then 
@@ -72,6 +77,9 @@ function XADBCheckUpdate(){
 
 
 function XADBCheckxia0(){
+	if [[  $(DeviceState)!="device" ]]; then
+		return
+	fi
 	if [[ "$1" = "clean" ]]; then
 		$ADB -d shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
 		return
@@ -96,7 +104,9 @@ function XADBCheckxia0(){
 	fi
 
 }
-	
+
+
+
 function xadb(){
 
 	# adb app [command] :show some app info 
@@ -525,10 +535,13 @@ function xadb(){
 }
 
 function adb(){
-	device=`$ADB -d get-state 2>/dev/null`
-	if [[ "$device" != "device" ]]; then
-		XADBELOG "no device found, please check connect state"
-		return
+	if [[  "$1" != "update"  ]] && [[  "$1" != "-h"  ]]; then
+		if [[  $(DeviceState)!="device" ]]; then
+			# XADBELOG "no device found, please check connect state"
+			XADBILOG "The device not found, now use original adb"
+			$ADB -d $@
+			return
+		fi
 	fi
 	XADBCheckUpdate
 	XADBCheckxia0
