@@ -14,73 +14,64 @@ ANDROID_SDK_PATH=`cat ~/.xadb/sdk-path`
 ADB="$ANDROID_SDK_PATH/platform-tools/adb"
 
 # If update.lock exsist : there is new version for updating. use adb update
-UPDATE_LOCK_FILE="$HOME/.xadb/update.lock"
+XADB_UPDATE_LOCK_FILE="$HOME/.xadb/update.lock"
 
 # last-check-update.time : the last timestamp of checking update
-LAST_CHECKUPDATE_TIMEFILE="$HOME/.xadb/last-check-update.time"
+XADB_LAST_CHECKUPDATE_TIMEFILE="$HOME/.xadb/last-check-update.time"
 
-function ilog(){
+function XADBILOG(){
 
 	echo -e "\033[32m[I]:$1 \033[0m"
 }
 
-function elog(){
+function XADBELOG(){
 	
 	echo -e "\033[31m[E]:$1 \033[0m"
 	
 }
 
-function DLOG(){
+function XADBDLOG(){
 	echo "[DEBUG]:$1" > /dev/null
 }
 
-function timeNow(){
+function XADBTimeNow(){
 	now=$(date "+%Y%m%d-%H:%M:%S")
 	echo $now
 }
 
-function checkConnect(){
-		# check device connect status
-	device=`$ADB -d get-state 2>/dev/null`
-	if [[ "$device" != "device" ]]; then
-		elog "no device found, please check connect state"
-		return
-	fi
-	echo "1"
-}
 
 function XADBCheckUpdate(){
-	if [[ ! -f $LAST_CHECKUPDATE_TIMEFILE ]]; then 
+	if [[ ! -f $XADB_LAST_CHECKUPDATE_TIMEFILE ]]; then 
 
-		DLOG "LAST_CHECKUPDATE_TIMEFILE Not Exsist."
-		sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $UPDATE_LOCK_FILE)"
-		echo `date '+%s'` > $LAST_CHECKUPDATE_TIMEFILE
+		XADBDLOG "XADB_LAST_CHECKUPDATE_TIMEFILE Not Exsist."
+		sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $XADB_UPDATE_LOCK_FILE)"
+		echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 
 	else
-		DLOG "LAST_CHECKUPDATE_TIMEFILE Exsist."
-		lastTimestamp=`cat $LAST_CHECKUPDATE_TIMEFILE`
+		XADBDLOG "XADB_LAST_CHECKUPDATE_TIMEFILE Exsist."
+		lastTimestamp=`cat $XADB_LAST_CHECKUPDATE_TIMEFILE`
 		nowTimestamp=`date '+%s'`
 		oneDayTimestamp=86400
 		needTimestamp=`expr $nowTimestamp - $lastTimestamp`
 		# echo $lastTimestamp $nowTimestamp $needTimestamp
 		# Last check update is one day ago?
 		if [[ $needTimestamp >  $oneDayTimestamp ]]; then 
-			sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $UPDATE_LOCK_FILE)"
-			echo `date '+%s'` > $LAST_CHECKUPDATE_TIMEFILE
+			sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $XADB_UPDATE_LOCK_FILE)"
+			echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 		fi
 	fi
 
 
-	if [[ -f $UPDATE_LOCK_FILE ]]; then
+	if [[ -f $XADB_UPDATE_LOCK_FILE ]]; then
 
-		ilog "XADB has updated! Run \"adb update\" get new version :)"
+		XADBILOG "XADB has updated! Run \"adb update\" get new version :)"
 	fi
 
-	DLOG "Update Check Done!"
+	XADBDLOG "Update Check Done!"
 }
 
 
-function checkxia0(){
+function XADBCheckxia0(){
 	if [[ "$1" = "clean" ]]; then
 		$ADB -d shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
 		return
@@ -150,7 +141,7 @@ function xadb(){
 
 				local_apk_file=`xadb app apk_in $APP_ID`
 
-				ilog "The APK File From Device:$local_apk_file"
+				XADBILOG "The APK File From Device:$local_apk_file"
 				;;
 
 			apk_in )
@@ -167,7 +158,7 @@ function xadb(){
 
 				base_apk=`xadb shell pm path $APP_ID | awk -F: '{printf $2}'`
 
-				now=`timeNow`
+				now=`XADBTimeNow`
 
 				xadb pull $base_apk $APP_ID-$now.apk 1>/dev/null
 				current_dir=`pwd`
@@ -184,7 +175,7 @@ function xadb(){
 				apk_file=`xadb app apk_in $APP_ID`
 
 				if [ -z "$apk_file" ]; then
-					elog "$APP_ID apk file can not copy from device"
+					XADBELOG "$APP_ID apk file can not copy from device"
 					return
 				fi
 				SIGN_RSA=`unzip -l $apk_file | grep "META-INF.*\.RSA" | awk  '{printf $4}'`
@@ -217,7 +208,7 @@ function xadb(){
 				fi
 
 				APPID=`adb app package`
-				ilog "============================[PID=$APPPID PACKAGE:$APPID]=================================="
+				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 				xadb shell "su -c 'cat /proc/$APPPID/maps'" | grep '\.so'
 				;;
 			dump )
@@ -299,7 +290,7 @@ function xadb(){
 		# 判断是否开启了调试
 		isdebug=`xadb shell getprop ro.debuggable`
 		if [[ "$isdebug" = "0" ]]; then
-			ilog "Not open debug, opening..."
+			XADBILOG "Not open debug, opening..."
 			ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0""`
 
 			if [[ "$ret" = "0" ]]; then
@@ -422,7 +413,7 @@ function xadb(){
 				xadb sudo "/data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
 				;;
 			* )
-				elog "\"$2\" debug server not found."
+				XADBELOG "\"$2\" debug server not found."
 				return 
 				;;
 		esac
@@ -437,7 +428,7 @@ function xadb(){
 		script="find /sdcard/xia0/frida -type f -name \"frida*arm64\""
 		server64=`xadb shell $script | awk -F/ '{print $NF}'`
 
-		ilog "Current frida-server version, for more version visit:[https://github.com/frida/frida/releases]"
+		XADBILOG "Current frida-server version, for more version visit:[https://github.com/frida/frida/releases]"
 		printf "[%5s]: %-50s\n" "arm" $server
 		printf "[%5s]: %-50s\n" "arm64" $server64
 
@@ -480,7 +471,7 @@ function xadb(){
 	# sudo 
 	if [ "$1" = "sudo" ]; then
 		cmd=$2
-		ilog "Run \"$cmd\""
+		XADBILOG "Run \"$cmd\""
 		xadb shell su -c "$cmd"
 		return
 	fi
@@ -505,14 +496,14 @@ function xadb(){
 		fi
 
 		APPPID=$2
-		ilog "============================[PID=$APPPID PACKAGE:$APPID]=================================="
+		XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 		xadb logcat --pid=$APPPID
 		return
 	fi
 
 
 	if [ "$1" = "update" ];then
-		DLOG "Run adb update"
+		XADBDLOG "Run adb update"
 		sh -c "cd $XADB_ROOT_DIR;git pull;"
 		return
 	fi
@@ -535,10 +526,10 @@ function xadb(){
 function adb(){
 	device=`$ADB -d get-state 2>/dev/null`
 	if [[ "$device" != "device" ]]; then
-		elog "no device found, please check connect state"
+		XADBELOG "no device found, please check connect state"
 		return
 	fi
 	XADBCheckUpdate
-	checkxia0
+	XADBCheckxia0
 	xadb $@
 }
