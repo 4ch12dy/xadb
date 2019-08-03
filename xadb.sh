@@ -517,6 +517,7 @@ function xadb(){
 		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
 		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local"
 		printf "adb %-8s %-35s		 \n" "-h" "show this help usage"
+		printf "adb %-8s %-35s		 \n" "update" "update xadb for new version!"
 		return
 	fi
 

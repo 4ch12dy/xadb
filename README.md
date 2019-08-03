@@ -19,6 +19,7 @@ adb debug    [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/g
 adb frida/64 start frida server on device        		 
 adb pcat     [remote-file]                       copy device file to local 
 adb -h       show this help usage 
+adb update   update xadb for new version!
 ```
 
 说明：adb兼容内置的所有命令。在分别在pixel2 Android8 和pixel3 Android9上面测试通过。
