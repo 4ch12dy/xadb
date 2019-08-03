@@ -504,7 +504,7 @@ function xadb(){
 
 	if [ "$1" = "update" ];then
 		XADBDLOG "Run adb update"
-		sh -c "cd $XADB_ROOT_DIR;git pull;"
+		sh -c "cd $XADB_ROOT_DIR;git pull | grep -q -v 'Already up-to-date.' && echo \"Already up-to-date!\" || rm $XADB_UPDATE_LOCK_FILE"
 		return
 	fi
 
