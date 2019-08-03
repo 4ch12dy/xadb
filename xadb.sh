@@ -49,7 +49,7 @@ function XADBCheckUpdate(){
 	if [[ ! -f $XADB_LAST_CHECKUPDATE_TIMEFILE ]]; then 
 
 		XADBDLOG "XADB_LAST_CHECKUPDATE_TIMEFILE Not Exsist."
-		sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $XADB_UPDATE_LOCK_FILE)"
+		sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' || (touch $XADB_UPDATE_LOCK_FILE)"
 		echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 
 	else
@@ -61,7 +61,7 @@ function XADBCheckUpdate(){
 		# echo $lastTimestamp $nowTimestamp $needTimestamp
 		# Last check update is one day ago?
 		if [[ $needTimestamp >  $oneDayTimestamp ]]; then 
-			sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' && (touch $XADB_UPDATE_LOCK_FILE)"
+			sh -c "cd $XADB_ROOT_DIR;git pull --dry-run | grep -q -v 'Already up-to-date.' || (touch $XADB_UPDATE_LOCK_FILE)"
 			echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 		fi
 	fi
@@ -543,7 +543,7 @@ function adb(){
 			return
 		fi
 	fi
-	XADBCheckUpdate
 	XADBCheckxia0
+	XADBCheckUpdate
 	xadb $@
 }
