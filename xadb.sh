@@ -49,7 +49,7 @@ function XADBCheckUpdate(){
 	if [[ ! -f $XADB_LAST_CHECKUPDATE_TIMEFILE ]]; then 
 
 		XADBDLOG "XADB_LAST_CHECKUPDATE_TIMEFILE Not Exsist."
-		sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE"
+		sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE 2>/dev/null"
 		echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 
 	else
@@ -61,7 +61,7 @@ function XADBCheckUpdate(){
 		# echo $lastTimestamp $nowTimestamp $needTimestamp
 		# Last check update is one day ago?
 		if [[ $needTimestamp >  $oneDayTimestamp ]]; then 
-			sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE"
+			sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE 2>/dev/null"
 			echo `date '+%s'` > $XADB_LAST_CHECKUPDATE_TIMEFILE
 		fi
 	fi
