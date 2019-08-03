@@ -77,7 +77,7 @@ function XADBCheckUpdate(){
 
 
 function XADBCheckxia0(){
-	if [[  $(DeviceState)!="device" ]]; then
+	if [[  $(XADBDeviceState) != "device" ]]; then
 		return
 	fi
 	if [[ "$1" = "clean" ]]; then
