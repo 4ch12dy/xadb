@@ -30,7 +30,12 @@ adb update   update xadb for new version!
 
 **关于脱壳，之前基于frida的脱壳脚本只能脱一代壳且兼容性不高，就暂时没放出来。如果有大佬有比较好的方式，可以pr或者联系我完善下这部分。**
 
- #### Screeshot
+#### 项目核心开发人员
+[xia0](https://github.com/4ch12dy)
+[hluwa](https://github.com/hluwa)
+
+
+#### Screeshot
 
 ![adb-device](https://github.com/4ch12dy/xadb/blob/master/screenshot/adb-device.png?raw=true)
 
@@ -69,4 +74,6 @@ adb update   update xadb for new version!
 
 
 ![adb-xlog](https://github.com/4ch12dy/xadb/blob/master/screenshot/adb-xlog.png?raw=true)
+
+
 
