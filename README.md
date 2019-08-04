@@ -18,6 +18,7 @@ adb xlog     [package]                           logcat just current app or spec
 adb debug    [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/gdb debug enviroment 
 adb frida/64 start frida server on device        		 
 adb pcat     [remote-file]                       copy device file to local 
+adb pstree   show the process tree of device
 adb -h       show this help usage 
 adb update   update xadb for new version!
 ```
@@ -33,8 +34,39 @@ adb update   update xadb for new version!
 #### 项目核心开发人员
 
 - [xia0](https://github.com/4ch12dy)
-
 - [hluwa](https://github.com/hluwa)
+
+
+
+#### Update
+
+- 2019-08-04/support pstree command: `adb pstree`
+
+  ```
+  |\
+  |  1 root init
+  |  |\
+  |  |  567 root init subcontext u:r:vendor_init:s0 9
+  |  |\
+  |  |  568 root init subcontext u:r:vendor_init:s0 10
+  |  |\
+  |  |  569 root ueventd
+  |  |\
+  |  |  582 logd logd
+  |  |\
+  |  |  583 system qseecomd
+  |  |   \
+  |  |    606 system qseecomd
+  |  |\
+  |  |  585 system android.hardware.keymaster@4.0-service-qti
+  |  |\
+  |  |  586 system vndservicemanager /dev/vndbinder
+  |  |\
+  |  |  587 hsm citadeld
+  ...
+  ```
+
+  
 
 
 #### Screeshot

@@ -103,6 +103,11 @@ function XADBCheckxia0(){
 		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
 	fi
 
+	ret=`$ADB -d shell "[ -d /sdcard/xia0/script ] && echo 1 || echo 0"`
+	if [[ "$ret" = "0" ]]; then
+		$ADB -d push "$XADB_ROOT_DIR/script" /sdcard/xia0
+	fi
+
 }
 
 
@@ -511,6 +516,18 @@ function xadb(){
 		return
 	fi
 
+	if [ "$1" = "pstree" ];then
+		ret=`adb shell "[ -f /data/local/tmp/pstree.sh ] && echo "1" || echo "0""`
+
+		if [[ "$ret" = "0" ]]; then
+			xadb sudo "cp /sdcard/xia0/script/pstree.sh /data/local/tmp/"
+		fi
+
+		xadb sudo "chmod 777 /sdcard/xia0/script/pstree.sh"
+		xadb shell su -c "sh /sdcard/xia0/script/pstree.sh" | more
+		return
+	fi
+
 
 	if [ "$1" = "update" ];then
 		XADBDLOG "Run adb update"
@@ -526,6 +543,7 @@ function xadb(){
 		printf "adb %-8s %-35s %-20s \n" "debug" "[ida/ida64,lldb/lldb64, gdb/gdb64]" "open debug and setup ida/lldb/gdb debug enviroment"
 		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
 		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local"
+		printf "adb %-8s %-35s 		 \n" "pstree" "show the process tree of device"
 		printf "adb %-8s %-35s		 \n" "-h" "show this help usage"
 		printf "adb %-8s %-35s		 \n" "update" "update xadb for new version!"
 		return
