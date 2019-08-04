@@ -524,6 +524,7 @@ function xadb(){
 		fi
 
 		xadb sudo "chmod 777 /sdcard/xia0/script/pstree.sh"
+		XADBILOG "Runing sh /sdcard/xia0/script/pstree.sh, Please wait..."
 		xadb shell su -c "sh /sdcard/xia0/script/pstree.sh" | more
 		return
 	fi
