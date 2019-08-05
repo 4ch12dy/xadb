@@ -66,6 +66,14 @@ adb update   update xadb for new version!
   ...
   ```
 
+- 2019-08-05/support ida debug customize the debug port
+
+  Usage:
+
+  - `adb debug ida 23333` set debug port:23333
+
+  - `adb debug ida` set 23946 as default debug port
+
   
 
 
