@@ -330,9 +330,20 @@ function xadb(){
 		xadb kill lldb-server
 		xadb kill lldb-server64
 
+
 		case $2 in
 			ida )
-				# 默认为32bit app ida debug
+
+				# if not set debug port. use 23946 as default port
+				if [[ -z "$3" ]]; then
+					XADBILOG "Not set debug port, Use 23946 as default port"
+					debugPort="23946"
+				else
+					XADBILOG "Set the debug port:$3"
+					debugPort=$3
+				fi
+
+				# 32bit app ida debug
 				server=`adb shell "[ -f /data/local/tmp/android_server ] && echo "1" || echo "0""`
 
 				if [[ "$server" = "0" ]]; then
@@ -341,11 +352,21 @@ function xadb(){
 				
 				xadb sudo "chmod 777 /data/local/tmp/android_server"
 				
-				xadb forward tcp:23946 tcp:23946
+				xadb forward tcp:$debugPort tcp:$debugPort
 
-				xadb sudo "/data/local/tmp/android_server"
+				xadb sudo "/data/local/tmp/android_server -p$debugPort"
 				;;
+
 			ida64 )
+				# if not set debug port. use 23946 as default port
+				if [[ -z "$3" ]]; then
+					XADBILOG "Not set debug port, Use 23946 as default port"
+					debugPort="23946"
+				else
+					XADBILOG "Set the debug port:$3"
+					debugPort=$3
+				fi
+
 				# 64bit app ida debug
 				server64=`adb shell "[ -f /data/local/tmp/android_server64 ] && echo "1" || echo "0""`
 
@@ -355,9 +376,9 @@ function xadb(){
 				
 				xadb sudo "chmod 777 /data/local/tmp/android_server64"
 
-				xadb forward tcp:23946 tcp:23946
+				xadb forward tcp:$debugPort tcp:$debugPort
 
-				xadb sudo "/data/local/tmp/android_server64"
+				xadb sudo "/data/local/tmp/android_server64 -p$debugPort"
 				return
 				;;
 			gdb )
