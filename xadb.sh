@@ -132,6 +132,12 @@ function xadb(){
 
 			pid )
 				APPID=`xadb app package`
+				APPPID=`xadb shell ps | grep  "$APPID$" | awk '{print $2}'`
+				echo $APPPID
+				;;
+
+			pidAll )
+				APPID=`xadb app package`
 				APPPID=`xadb shell ps | grep  "$APPID" | awk '{print $2}'`
 				echo $APPPID
 				;;
@@ -233,7 +239,7 @@ function xadb(){
 				;;
 			*)
 				APPID=`xadb app package`
-				APPPID=`xadb app pid`
+				APPPID=`xadb app pidAll`
 				APPDIR=`xadb app info | grep codePath`
 				APPDIR=${APPDIR##*codePath=}
 				APPDATADIR=`xadb app info | grep dataDir`
