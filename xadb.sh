@@ -224,7 +224,7 @@ function xadb(){
 
 				APPID=`adb app package`
 				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
-				xadb shell "su -c 'cat /proc/$APPPID/maps'" | grep '\.so'
+				xadb xdo "cat /proc/$APPPID/maps" | grep '\.so'
 				;;
 			dump )
 				# arm / arm64
@@ -500,7 +500,7 @@ function xadb(){
 	if [[ "$1" = "pcat" ]]; then
 		filepath=$2
 		filename=${filepath##*/}
-		xadb shell su -c "cat $2" > $filename
+		xadb xdo "cat $2" > $filename
 		return
 	fi
 
@@ -508,7 +508,22 @@ function xadb(){
 	if [ "$1" = "sudo" ]; then
 		cmd=$2
 		XADBILOG "Run \"$cmd\""
-		xadb shell su -c "$cmd"
+		xadb shell su -c "$cmd" 2>/dev/null;
+
+		if [[ "$?" != "0" ]]; then
+			xadb shell su 0/0 "$cmd"
+		fi
+		return
+	fi
+
+	if [[ "$1" = "xdo" ]]; then
+		cmd=$2
+		xadb shell su -c "$cmd" 2>/dev/null;
+
+		if [[ "$?" != "0" ]]; then
+			xadb shell su 0/0 "$cmd"
+		fi
+
 		return
 	fi
 
@@ -546,7 +561,7 @@ function xadb(){
 
 		xadb sudo "chmod 777 /sdcard/xia0/script/pstree.sh"
 		XADBILOG "Runing sh /sdcard/xia0/script/pstree.sh, Please wait..."
-		xadb shell su -c "sh /sdcard/xia0/script/pstree.sh" | more
+		xadb xdo "sh /sdcard/xia0/script/pstree.sh" | more
 		return
 	fi
 
