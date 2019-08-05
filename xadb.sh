@@ -522,6 +522,7 @@ function xadb(){
 		return
 	fi
 
+	# xdo == sudo. just for clean output cmd. NO "Run $cmd" Log
 	if [[ "$1" = "xdo" ]]; then
 		cmd=$2
 		xadb shell su -c "$cmd" 2>/dev/null;
