@@ -617,6 +617,7 @@ function xadb(){
 
 	if [ "$1" = "update" ];then
 		XADBDLOG "Run adb update"
+		sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE 2>/dev/null"
 		sh -c "cd $XADB_ROOT_DIR;git pull"
 		return
 	fi
