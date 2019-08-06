@@ -151,8 +151,9 @@ function xadb(){
 				;;
 				
 			debug )
-				activity=`xadb app activity | awk '{print $3}' | awk -F} '{print $1}'`
-				xadb shell am start -D -n $activity
+				activity=`xadb app activity`
+				xadb sudo "setenforce 0"
+				xadb sudo "am start -D -n $activity"
 				sleep 2
 				pid=`xadb app pid`
 				xadb forward tcp:8700 jdwp:$pid
