@@ -151,8 +151,37 @@ function xadb(){
 				;;
 				
 			debug )
+				# 判断是否开启了调试
+				isdebug=`xadb shell getprop ro.debuggable`
+				if [[ "$isdebug" = "0" ]]; then
+					XADBILOG "Not open debug, opening..."
+					ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0""`
+
+					if [[ "$ret" = "0" ]]; then
+						xadb sudo "cp /sdcard/xia0/tools/mprop /data/local/tmp/"
+					fi
+					xadb sudo "chmod 777 /data/local/tmp/mprop"
+					xadb sudo "/data/local/tmp/mprop"
+					xadb sudo "setprop ro.debuggable 1"
+					xadb sudo "/data/local/tmp/mprop -r"
+					xadb sudo "getprop ro.debuggable"
+					xadb sudo "stop"
+					sleep 2
+					xadb sudo "start"
+					sleep 5
+
+					XADBILOG "Opened debug, Retry for happy debugging!"
+					return
+				fi
+
+				enforce=`xadb sudo getenforce`
+
+				if [[ "$enforce" =~ "Enforcing" || "$enforce" == "1" ]]; then
+					XADBILOG "Set enforce to Permissive, Please wait..."
+					xadb sudo "setenforce 0"
+				fi
+
 				activity=`xadb app activity`
-				xadb sudo "setenforce 0"
 				xadb sudo "am start -D -n $activity"
 				sleep 2
 				pid=`xadb app pid`
@@ -336,6 +365,9 @@ function xadb(){
 			sleep 2
 			xadb sudo "start"
 			sleep 5
+
+			XADBILOG "Opened debug, Retry for happy debugging!"
+			return
 		fi
 
 		# kill all server if process exsist
@@ -527,7 +559,7 @@ function xadb(){
 		xadb shell su -c "$cmd" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
-			xadb shell su 0/0 "$cmd"
+			xadb shell su 0/0 "$cmd" 2>/dev/null;
 		fi
 		return
 	fi
@@ -538,7 +570,7 @@ function xadb(){
 		xadb shell su -c "$cmd" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
-			xadb shell su 0/0 "$cmd"
+			xadb shell su 0/0 "$cmd" 2>/dev/null;
 		fi
 
 		return
