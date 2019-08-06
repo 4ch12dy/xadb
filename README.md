@@ -15,7 +15,7 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 
 - 运行里面的安装脚本，需指定sdk路径，若不指定，则选择AndroidStudio默认的sdk路径
 
-  `./install.sh the_android_sdk_path ` example:`./install.sh ~/xia0/android/sdk`
+  `./install.sh the_android_sdk_path ` 例如:`./install.sh ~/xia0/android/sdk`
 
 - 如果你是bash的终端环境则运行
 
