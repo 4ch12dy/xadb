@@ -56,7 +56,7 @@ function XADBCheckUpdate(){
 		XADBDLOG "XADB_LAST_CHECKUPDATE_TIMEFILE Exsist."
 		lastTimestamp=`cat $XADB_LAST_CHECKUPDATE_TIMEFILE`
 		nowTimestamp=`date '+%s'`
-		oneDayTimestamp=86400
+		oneDayTimestamp=43200
 		needTimestamp=`expr $nowTimestamp - $lastTimestamp`
 		# echo $lastTimestamp $nowTimestamp $needTimestamp
 		# Last check update is one day ago?
