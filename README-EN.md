@@ -1,5 +1,5 @@
 # xadb
-Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键查看app、设备信息，一键脱壳等等
+Android automated shell script, auto setup ida/gdb/lldb debug env, auto get device or app info and so on.
 
 #### Install
 
@@ -10,6 +10,14 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 - If your shell is zsh run :`source ~/.zshrc`
 
 #### Command
+
+> Tips：adb兼容内置的所有命令。在分别在pixel2 Android8 和pixel3 Android9上面测试通过。
+>
+> `mprop`只编译了64位的版本，若你为32位的设备，可以自行编译。
+>
+> 在source目录下面提供了mprop的源码及build脚本
+
+**关于脱壳，之前基于frida的脱壳脚本只能脱一代壳且兼容性不高，就暂时没放出来。如果有大佬有比较好的方式，可以pr或者联系我完善下这部分。**
 
 ```
 adb device   [imei]                              show connected android device basic info 
@@ -23,15 +31,9 @@ adb -h       show this help usage
 adb update   update xadb for new version!
 ```
 
-说明：adb兼容内置的所有命令。在分别在pixel2 Android8 和pixel3 Android9上面测试通过。
 
-`mprop`只编译了64位的版本，若你为32位的设备，可以自行编译。
 
-在source目录下面提供了mprop的源码及build脚本
-
-**关于脱壳，之前基于frida的脱壳脚本只能脱一代壳且兼容性不高，就暂时没放出来。如果有大佬有比较好的方式，可以pr或者联系我完善下这部分。**
-
-#### 项目核心开发人员
+#### Project developers
 
 - [xia0](https://github.com/4ch12dy)
 - [hluwa](https://github.com/hluwa)
