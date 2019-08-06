@@ -135,7 +135,7 @@ function xadb(){
 				;;
 
 			activity )
-				xadb shell dumpsys window | grep -i  mCurrentFocus
+				xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $3}' | awk -F} '{print $1}'
 				;;
 
 			pid )
@@ -248,11 +248,12 @@ function xadb(){
 			*)
 				APPID=`xadb app package`
 				APPPID=`xadb app pidAll`
+				APPACTIVITY=`xadb app activity`
 				APPDIR=`xadb app info | grep codePath`
 				APPDIR=${APPDIR##*codePath=}
 				APPDATADIR=`xadb app info | grep dataDir`
 				APPDATADIR=${APPDATADIR##*dataDir=}
-				echo -e "app=$APPID\npid=$APPPID\nappdir=$APPDIR\ndatadir=$APPDATADIR"
+				echo -e "app=$APPID\npid=$APPPID\nactivity=$APPACTIVITY\nappdir=$APPDIR\ndatadir=$APPDATADIR"
 				;;
 		esac
 
