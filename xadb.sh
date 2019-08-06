@@ -116,6 +116,14 @@ function xadb(){
 
 	# adb app [command] :show some app info 
 	if [ "$1" = "app" ];then
+		
+		# check current screen is in StatusBar?
+		curScreen=`xadb shell dumpsys window | grep -i  mCurrentFocus`
+		if [[ "$curScreen" == *"StatusBar"* ]]; then
+			XADBILOG "Current screen is in the StatusBar. Please unlock or focus on app"
+			return
+		fi
+
 		case $2 in
 			package )
 				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F/ '{print $1}' | awk '{print $NF}'`
