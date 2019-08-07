@@ -126,7 +126,9 @@ function xadb(){
 
 		case $2 in
 			package )
-				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F/ '{print $1}' | awk '{print $NF}'`
+				# APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F/ '{print $1}' | awk '{print $NF}'`
+				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o | awk -F/ '{print $1}'`
+
 				if [[ "$APPID" = "Waiting" ]]; then
 					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $6}' | awk -F} '{print $1}'`
 				fi
