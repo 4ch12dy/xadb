@@ -126,18 +126,18 @@ function xadb(){
 
 		case $2 in
 			package )
-				# APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F/ '{print $1}' | awk '{print $NF}'`
-				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o | awk -F/ '{print $1}'`
+				# APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F'/' '{print $1}' | awk '{print $NF}'`
+				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o | awk -F'/' '{print $1}'`
 
 				if [[ "$APPID" = "Waiting" ]]; then
-					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $6}' | awk -F} '{print $1}'`
+					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $6}' | awk -F'}' '{print $1}'`
 				fi
 					
 				echo $APPID
 				;;
 
 			activity )
-				xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $3}' | awk -F} '{print $1}'
+				adb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
 				;;
 
 			pid )
@@ -217,7 +217,7 @@ function xadb(){
 					return
 				fi
 
-				base_apk=`xadb shell pm path $APP_ID | awk -F: '{printf $2}'`
+				base_apk=`xadb shell pm path $APP_ID | awk -F':' '{printf $2}'`
 
 				now=`XADBTimeNow`
 
@@ -309,7 +309,7 @@ function xadb(){
 				imei=`xadb device imei`
 				sdk_api=`xadb shell getprop ro.build.version.sdk`
 				os_ver=`xadb shell getprop ro.build.version.release`
-				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F/ '{printf $1}' | awk '{printf $2}'`
+				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}'`
 				debug=`xadb shell getprop ro.debuggable`
 
 				printf "%-20s %-20s \n" "model" "$model"
@@ -509,10 +509,10 @@ function xadb(){
 	if [[ "$1" =~ "frida" ]]; then
 		# https://github.com/frida/frida/releases
 		script="find /sdcard/xia0/frida -type f -name \"frida*arm\""
-		server=`xadb shell $script | awk -F/ '{print $NF}'`
+		server=`xadb shell $script | awk -F'/' '{print $NF}'`
 
 		script="find /sdcard/xia0/frida -type f -name \"frida*arm64\""
-		server64=`xadb shell $script | awk -F/ '{print $NF}'`
+		server64=`xadb shell $script | awk -F'/' '{print $NF}'`
 
 		XADBILOG "Current frida-server version, for more version visit:[https://github.com/frida/frida/releases]"
 		printf "[%5s]: %-50s\n" "arm" $server
