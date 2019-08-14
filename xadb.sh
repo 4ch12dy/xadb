@@ -651,7 +651,7 @@ function xadb(){
 
 
 	if [ "$1" = "agent" ];then
-		if [[ "$2" = "reInstall" ]]; then
+		if [[ "$2" = "reinstall" ]]; then
 			XADBCheckxia0 force
 		fi
 
@@ -678,6 +678,8 @@ function xadb(){
 		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
 		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local"
 		printf "adb %-8s %-35s 		 \n" "pstree" "show the process tree of device"
+		printf "adb %-8s %-35s %-20s \n" "sign" "[local-apk-file]" "show sign of local apk file"
+		printf "adb %-8s %-35s %-20s \n" "agent" "[clean/reinstall]" "clean caches and reinstall agent"
 		printf "adb %-8s %-35s		 \n" "-h" "show this help usage"
 		printf "adb %-8s %-35s		 \n" "update" "update xadb for new version!"
 		return

@@ -44,9 +44,11 @@ adb xlog     [package]                           logcat just current app or spec
 adb debug    [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/gdb debug enviroment 
 adb frida/64 start frida server on device        		 
 adb pcat     [remote-file]                       copy device file to local 
-adb pstree   show the process tree of device
-adb -h       show this help usage 
-adb update   update xadb for new version!
+adb pstree   show the process tree of device     		 
+adb sign     [local-apk-file]                    show sign of local apk file 
+adb agent    [clean/reinstall]                   clean caches and reinstall agent 
+adb -h       show this help usage               		 
+adb update   update xadb for new version! 
 ```
 
 - adb device 
