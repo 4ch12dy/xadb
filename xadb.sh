@@ -635,6 +635,20 @@ function xadb(){
 		return
 	fi
 
+	if [ "$1" = "sign" ];then
+		if [[ -z $2 ]]; then
+			XADBILOG "[usage] adb sign local-apk-file"
+			return
+		fi
+
+		apk_file=$2
+
+		SIGN_RSA=`unzip -l $apk_file | grep "META-INF.*\.RSA" | awk  '{printf $4}'`
+		# echo $SIGN_RSA
+		unzip -p $apk_file $SIGN_RSA | keytool -printcert
+		return
+	fi
+
 
 	if [ "$1" = "agent" ];then
 		if [[ "$2" = "reInstall" ]]; then
