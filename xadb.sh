@@ -81,7 +81,26 @@ function XADBCheckxia0(){
 		return
 	fi
 	if [[ "$1" = "clean" ]]; then
-		$ADB -d shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
+		XADBILOG "This cmd will delete all file in /data/local/tmp, continue? [yes/no]"
+		read -p "This cmd will delete all file in /data/local/tmp, continue [yes/no]? : " yes_or_no
+		
+		if [[ "$yes_or_no" = "yes" ]]; then
+			$ADB -d shell su -c "rm -fr /data/local/tmp/*"
+			if [[ "$?" != "0" ]]; then
+				$ADB -d shell su 0/0 "rm -fr /data/local/tmp/*"
+			fi
+		fi
+		return
+		# $ADB -d shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
+		# return
+	fi
+
+	if [[ "$1" = "force" ]]; then
+		XADBCheckxia0 clean
+		$ADB -d push "$XADB_ROOT_DIR/frida" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/tools" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
+		$ADB -d push "$XADB_ROOT_DIR/script" /sdcard/xia0
 		return
 	fi
 
@@ -613,6 +632,18 @@ function xadb(){
 		xadb sudo "chmod 777 /sdcard/xia0/script/pstree.sh"
 		XADBILOG "Runing sh /sdcard/xia0/script/pstree.sh, Please wait..."
 		xadb xdo "sh /sdcard/xia0/script/pstree.sh" | more
+		return
+	fi
+
+
+	if [ "$1" = "agent" ];then
+		if [[ "$2" = "reInstall" ]]; then
+			XADBCheckxia0 force
+		fi
+
+		if [[ "$2" = "clean" ]]; then
+			XADBCheckxia0 clean
+		fi
 		return
 	fi
 
