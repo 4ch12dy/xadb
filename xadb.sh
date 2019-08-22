@@ -627,19 +627,20 @@ function xadb(){
 	# show log of app
 	if [ "$1" = "xlog" ];then
 		if [ -z "$2" ]; then
-			APPPID=`xadb app pid`
+			APPPID=`xadb app pid | tr -d '\r'`
 			xadb xlog $APPPID
 			return
 		fi
 
 		APPPID=$2
+		APPID=`xadb app package | tr -d '\r'`
 		XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 		xadb logcat --pid=$APPPID
 		return
 	fi
 
 	if [ "$1" = "pstree" ];then
-		ret=`adb shell "[ -f /data/local/tmp/pstree.sh ] && echo "1" || echo "0""`
+		ret=`adb shell "[ -f /data/local/tmp/pstree.sh ] && echo "1" || echo "0"" | tr -d '\r'`
 
 		if [[ "$ret" = "0" ]]; then
 			xadb sudo "cp /sdcard/xia0/script/pstree.sh /data/local/tmp/"
@@ -679,7 +680,7 @@ function xadb(){
 
 
 	if [ "$1" = "update" ];then
-		XADBDLOG "Run adb update"c
+		XADBDLOG "Run adb update"
 		sh -c "cd $XADB_ROOT_DIR;git pull"
 		sh -c "cd $XADB_ROOT_DIR;git remote show origin | grep -q \"local out of date\" && (touch $XADB_UPDATE_LOCK_FILE) || rm $XADB_UPDATE_LOCK_FILE 2>/dev/null"
 		return
