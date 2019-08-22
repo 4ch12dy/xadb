@@ -27,4 +27,4 @@ for dex in matches:
     if not os.path.exists("./" + pkg_name + "/"):
         os.mkdir("./" + pkg_name + "/")
     open(pkg_name + "/" + dex['addr'] + ".dex", 'wb').write(bs)
-    print("len: " + hex(dex['size']) + ", path: ./" + pkg_name + "/" + dex['addr'] + ".dex")
+    print("[Dumpdex]: DexSize=" + hex(dex['size']) + ", SavePath=./" + pkg_name + "/" + dex['addr'] + ".dex")

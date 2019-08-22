@@ -325,6 +325,7 @@ function xadb(){
 
 				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 
+				XADBILOG "Dex Dump Done! Happy Reversing~"
 				;;
 			*)
 				APPID=`xadb app package`
