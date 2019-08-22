@@ -301,8 +301,16 @@ function xadb(){
 				;;
 			dump )
 				# arm / arm64
-				echo "Dex dump is developing,please wait..."
-				# python "$android_dir/frida/frida_dump.py" -p $APPID -a $ARCH -v $OSVER
+				if [ -z "$3" ]; then
+					APPPID=`xadb app pid`
+
+				else
+					APPPID=$3
+				fi
+
+				XADBILOG "Dex Dump Power by hluwa"
+				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPID
+
 				;;
 			*)
 				APPID=`xadb app package`
