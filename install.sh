@@ -9,6 +9,7 @@ zsh_profile=$HOME"/.zshrc"
 #Please Set the Android SDK Path
 ###############################
 ANDROID_SDK_PATH=""
+ADB_PATH=""
 ###############################
 
 function xlog(){
@@ -19,14 +20,21 @@ function checkSDKPath(){
 	sdk_path=$1
 	if [[ -f "$sdk_path/platform-tools/adb" ]];then
 		xlog "Found adb, Continue!"
+	elif [[ -n $ADB_PATH ]];then
+		xlog "Found adb, Continue!"
 	else
 		xlog "Not Found adb, Please Check the Android SDK Path."
 		exit
 	fi
 }
+if [[ -e ~/Library/Android/sdk ]];then
+	ANDROID_SDK_PATH=~/Library/Android/sdk
+fi
 
 if [[ -n "$1" ]];then 
 	ANDROID_SDK_PATH=$1
+elif [[ -e $(which adb) ]]; then
+	ADB_PATH=$(which adb)
 elif [[ -e ~/Library/Android/sdk ]];then
 	ANDROID_SDK_PATH=~/Library/Android/sdk
 else
@@ -44,6 +52,8 @@ echo "$shell_root_dir" > ~/.xadb/rootdir
 
 echo "$ANDROID_SDK_PATH" > ~/.xadb/sdk-path
 
+echo "$ADB_PATH" > ~/.xadb/adb-path
+
 if [[ "$SHELL" = "/bin/zsh" ]]; then
 
 	sh_profile=$zsh_profile
@@ -56,7 +66,6 @@ else
 	echo "Not Support shell:$SHELL"
 	exit
 fi
-
 
 # add issh.sh to shell_profile
 xlog "add \"source $shell_file\" to $sh_profile"

@@ -11,7 +11,15 @@ XADB_ROOT_DIR=`cat ~/.xadb/rootdir`
 
 ANDROID_SDK_PATH=`cat ~/.xadb/sdk-path`
 
-ADB="$ANDROID_SDK_PATH/platform-tools/adb"
+ADB=""
+
+if [[ -e "$HOME/.xadb/adb-path" ]];then
+	ADB=`cat ~/.xadb/adb-path`
+fi
+
+if [[ -z $ADB ]];then
+	ADB=$ANDROID_SDK_PATH/platform-tools/adb
+fi
 
 # If update.lock exsist : there is new version for updating. use adb update
 XADB_UPDATE_LOCK_FILE="$HOME/.xadb/update.lock"
