@@ -25,6 +25,13 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 
   `source ~/.zshrc`
 
+
+
+
+#### 重要更新
+
+- [2019/08/22] # xadb集成第一代壳的脱壳功能（power by hluwa）
+
   
 
 #### 支持的命令
@@ -76,7 +83,7 @@ adb update   update xadb for new version!
   - **adb app apk**:获取当前app的apk文件到本地
   - **adb app screen**:获取当前屏幕截图
   - **adb app debug**:以后台启动模式开启当前app调试
-  - **adb app dump**:针对当前app的dex脱壳，目前还在开发。
+  - **adb app dump**:针对当前app的dex脱壳。
 
 - adb xlog [package]
 

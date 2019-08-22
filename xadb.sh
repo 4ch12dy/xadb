@@ -336,7 +336,7 @@ function xadb(){
 				;;
 			
 			*)
-				model=`xadb shell getprop ro.product.model`
+				model=`xadb shell getprop ro.product.model` 
 				serialno=`xadb shell getprop ro.serialno`
 				brand=`xadb shell getprop ro.product.brand`
 				manufacturer=`xadb shell getprop ro.product.manufacturer`
