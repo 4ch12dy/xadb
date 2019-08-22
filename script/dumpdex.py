@@ -5,7 +5,8 @@ import frida
 
 if len(sys.argv) > 1:
 	app_pid = sys.argv[1]
-
+	print("[Dumpdex]: You specail the pid "+app_pid)
+	
 device = frida.get_usb_device()
 pkg_name = device.get_frontmost_application().identifier
 

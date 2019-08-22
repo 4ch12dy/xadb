@@ -164,27 +164,27 @@ function xadb(){
 				;;
 
 			activity )
-				adb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
+				adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
 				;;
 
 			pid )
-				APPID=`xadb app package`
-				APPPID=`xadb shell ps | grep  "$APPID$" | awk '{print $2}'`
+				APPID=`xadb app package | tr -d '\r'`
+				APPPID=`xadb xdo ps | tr -d '\r' | grep  "$APPID$" | awk '{print $2}'`
 				echo $APPPID
 				;;
 
 			pidAll )
-				APPID=`xadb app package`
-				APPPID=`xadb shell ps | grep  "$APPID" | awk '{print $2}'`
+				APPID=`xadb app package | tr -d '\r'`
+				APPPID=`xadb xdo ps | tr -d '\r' | grep  "$APPID" | awk '{print $2}'`
 				echo $APPPID
 				;;
 				
 			debug )
 				# 判断是否开启了调试
-				isdebug=`xadb shell getprop ro.debuggable`
+				isdebug=`xadb shell getprop ro.debuggable | tr -d '\r'`
 				if [[ "$isdebug" = "0" ]]; then
 					XADBILOG "Not open debug, opening..."
-					ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0""`
+					ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0"" | tr -d '\r'`
 
 					if [[ "$ret" = "0" ]]; then
 						xadb sudo "cp /sdcard/xia0/tools/mprop /data/local/tmp/"
@@ -203,14 +203,14 @@ function xadb(){
 					return
 				fi
 
-				enforce=`xadb sudo getenforce`
+				enforce=`xadb sudo getenforce | tr -d '\r'`
 
 				if [[ "$enforce" =~ "Enforcing" || "$enforce" == "1" ]]; then
 					XADBILOG "Set enforce to Permissive, Please wait..."
 					xadb sudo "setenforce 0"
 				fi
 
-				activity=`xadb app activity`
+				activity=`xadb app activity | tr -d '\r'`
 				xadb sudo "am start -D -n $activity"
 				sleep 2
 				pid=`xadb app pid`
@@ -221,7 +221,7 @@ function xadb(){
 			# get apk file from device
 			apk )
 				if [ -z "$3" ]; then
-					APP_ID=`xadb app package`
+					APP_ID=`xadb app package | tr -d '\r'`
 
 				else
 					APP_ID=$3
@@ -234,7 +234,7 @@ function xadb(){
 
 			apk_in )
 				if [ -z "$3" ]; then
-					APP_ID=`xadb app package`
+					APP_ID=`xadb app package | tr -d '\r'`
 
 				else
 					APP_ID=$3
@@ -244,7 +244,7 @@ function xadb(){
 					return
 				fi
 
-				base_apk=`xadb shell pm path $APP_ID | awk -F':' '{printf $2}'`
+				base_apk=`xadb shell pm path $APP_ID | tr -d '\r' | awk -F':' '{printf $2}'`
 
 				now=`XADBTimeNow`
 
@@ -254,7 +254,7 @@ function xadb(){
 				;;
 			sign )
 				if [ -z "$3" ]; then
-					APP_ID=`xadb app package`
+					APP_ID=`xadb app package | tr -d '\r'`
 
 				else
 					APP_ID=$3
@@ -274,7 +274,7 @@ function xadb(){
 
 			info )
 				if [ -z "$3" ]; then
-					APP_ID=`xadb app package`
+					APP_ID=`xadb app package | tr -d '\r'`
 
 				else
 					APP_ID=$3
@@ -289,13 +289,13 @@ function xadb(){
 			# dump current app so sharelib
 			so|dumpso )
 				if [ -z "$3" ]; then
-					APPPID=`xadb app pid`
+					APPPID=`xadb app pid | tr -d '\r'`
 
 				else
 					APPPID=$3
 				fi
 
-				APPID=`adb app package`
+				APPID=`adb app package | tr -d '\r'`
 				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 				xadb xdo "cat /proc/$APPPID/maps" | grep '\.so'
 				;;
@@ -309,7 +309,7 @@ function xadb(){
 				fi
 
 				XADBILOG "Dex Dump Power by hluwa"
-				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPID
+				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 
 				;;
 			*)
@@ -336,16 +336,16 @@ function xadb(){
 				;;
 			
 			*)
-				model=`xadb shell getprop ro.product.model` 
-				serialno=`xadb shell getprop ro.serialno`
-				brand=`xadb shell getprop ro.product.brand`
-				manufacturer=`xadb shell getprop ro.product.manufacturer`
-				abilist=`xadb shell getprop ro.product.cpu.abilist`
-				imei=`xadb device imei`
-				sdk_api=`xadb shell getprop ro.build.version.sdk`
-				os_ver=`xadb shell getprop ro.build.version.release`
-				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}'`
-				debug=`xadb shell getprop ro.debuggable`
+				model=`xadb shell getprop ro.product.model  | tr -d '\r' ` 
+				serialno=`xadb shell getprop ro.serialno  | tr -d '\r'`
+				brand=`xadb shell getprop ro.product.brand  | tr -d '\r'`
+				manufacturer=`xadb shell getprop ro.product.manufacturer | tr -d '\r'`
+				abilist=`xadb shell getprop ro.product.cpu.abilist | tr -d '\r' `
+				imei=`xadb device imei | tr -d '\r' `
+				sdk_api=`xadb shell getprop ro.build.version.sdk | tr -d '\r' `
+				os_ver=`xadb shell getprop ro.build.version.release | tr -d '\r' `
+				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}' | tr -d '\r'`
+				debug=`xadb shell getprop ro.debuggable | tr -d '\r'`
 
 				printf "%-20s %-20s \n" "model" "$model"
 				printf "%-20s %-20s \n" "brand" "$brand"
@@ -429,7 +429,7 @@ function xadb(){
 				fi
 
 				# 32bit app ida debug
-				server=`adb shell "[ -f /data/local/tmp/android_server ] && echo "1" || echo "0""`
+				server=`adb shell "[ -f /data/local/tmp/android_server ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/android_server /data/local/tmp/"
@@ -453,7 +453,7 @@ function xadb(){
 				fi
 
 				# 64bit app ida debug
-				server64=`adb shell "[ -f /data/local/tmp/android_server64 ] && echo "1" || echo "0""`
+				server64=`adb shell "[ -f /data/local/tmp/android_server64 ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server64" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/android_server64 /data/local/tmp/"
@@ -473,7 +473,7 @@ function xadb(){
 					pid=`xadb app pid`
 				fi
 
-				server=`adb shell "[ -f /data/local/tmp/gdbserver ] && echo "1" || echo "0""`
+				server=`adb shell "[ -f /data/local/tmp/gdbserver ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/gdbserver /data/local/tmp/"
@@ -493,7 +493,7 @@ function xadb(){
 					pid=`xadb app pid`
 				fi
 
-				server64=`adb shell "[ -f /data/local/tmp/gdbserver64 ] && echo "1" || echo "0""`
+				server64=`adb shell "[ -f /data/local/tmp/gdbserver64 ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server64" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/gdbserver64 /data/local/tmp/"
@@ -508,7 +508,7 @@ function xadb(){
 				;;
 
 			lldb )
-				server=`adb shell "[ -f /data/local/tmp/lldb-server ] && echo "1" || echo "0""`
+				server=`adb shell "[ -f /data/local/tmp/lldb-server ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/lldb-server /data/local/tmp/"
@@ -522,7 +522,7 @@ function xadb(){
 				;;
 
 			lldb64 )
-				server64=`adb shell "[ -f /data/local/tmp/lldb-server64 ] && echo "1" || echo "0""`
+				server64=`adb shell "[ -f /data/local/tmp/lldb-server64 ] && echo "1" || echo "0"" | tr -d '\r'`
 
 				if [[ "$server64" = "0" ]]; then
 					xadb sudo "cp /sdcard/xia0/debug-server/lldb-server64 /data/local/tmp/"
@@ -544,10 +544,10 @@ function xadb(){
 	if [[ "$1" =~ "frida" ]]; then
 		# https://github.com/frida/frida/releases
 		script="find /sdcard/xia0/frida -type f -name \"frida*arm\""
-		server=`xadb shell $script | awk -F'/' '{print $NF}'`
+		server=`xadb shell $script | awk -F'/' '{print $NF}' | tr -d '\r'`
 
 		script="find /sdcard/xia0/frida -type f -name \"frida*arm64\""
-		server64=`xadb shell $script | awk -F'/' '{print $NF}'`
+		server64=`xadb shell $script | awk -F'/' '{print $NF}' | tr -d '\r' `
 
 		XADBILOG "Current frida-server version, for more version visit:[https://github.com/frida/frida/releases]"
 		printf "[%5s]: %-50s\n" "arm" $server
@@ -559,7 +559,7 @@ function xadb(){
 		xadb forward tcp:27042 tcp:27042
 
 		if [[ "$1" = "frida64" ]]; then
-			ret=`adb shell "[ -f /data/local/tmp/$server64 ] && echo "1" || echo "0""`
+			ret=`adb shell "[ -f /data/local/tmp/$server64 ] && echo "1" || echo "0"" | tr -d '\r'`
 
 			if [[ "$ret" = "0" ]]; then
 				xadb sudo "cp /sdcard/xia0/frida/$server64 /data/local/tmp/"
@@ -570,7 +570,7 @@ function xadb(){
 			return
 		fi
 
-		ret=`adb shell "[ -f /data/local/tmp/$server ] && echo "1" || echo "0""`
+		ret=`adb shell "[ -f /data/local/tmp/$server ] && echo "1" || echo "0"" | tr -d '\r' `
 
 		if [[ "$ret" = "0" ]]; then
 			xadb sudo "cp /sdcard/xia0/frida/$server /data/local/tmp/"
@@ -616,7 +616,7 @@ function xadb(){
 	# kill process by name
 	if [[ "$1" = "kill" ]]; then
 		process_name=$2
-		live=`xadb sudo "ps" | grep $process_name | awk '{print $9}'`
+		live=`xadb sudo "ps" | grep $process_name | awk '{print $9}' | tr -d '\r'`
 		# echo $process_name
 		if [[ -n "$live" && "$live" = "$process_name" ]]; then
 			xadb sudo "killall -9 $process_name"
