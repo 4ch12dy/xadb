@@ -301,7 +301,7 @@ function xadb(){
 				;;
 
 			dump )
-				XADBILOG "Dex Dump Power by hluwa, Please wait..."
+				XADBILOG "Dex Dump Power by hluwa, Please wait about 5 second...."
 				# auto launch frida base device abi
 				isArm64=`adb device abilist | grep -q "arm64-v8a" && echo "1" || echo "0"`
 
@@ -314,7 +314,7 @@ function xadb(){
 				fi
 
 				# sleep for frida launch
-				sleep 2
+				sleep 5
 
 				if [ -z "$3" ]; then
 					APPPID=`xadb app pid`
