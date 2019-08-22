@@ -299,8 +299,23 @@ function xadb(){
 				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 				xadb xdo "cat /proc/$APPPID/maps" | grep '\.so'
 				;;
+
 			dump )
-				# arm / arm64
+				XADBILOG "Dex Dump Power by hluwa, Please wait..."
+				# auto launch frida base device abi
+				isArm64=`adb device abilist | grep -q "arm64-v8a" && echo "1" || echo "0"`
+
+				if [[ "$isArm64" = "1" ]]; then
+					XADBILOG "Deice is arm64-v8a, launch frida64"
+					(adb frida64 > /dev/null 2>&1 &)
+				else
+					XADBILOG "Deice is not arm64-v8a, launch frida"
+					(adb frida > /dev/null 2>&1 &)
+				fi
+
+				# sleep for frida launch
+				sleep 2
+
 				if [ -z "$3" ]; then
 					APPPID=`xadb app pid`
 
@@ -308,7 +323,6 @@ function xadb(){
 					APPPID=$3
 				fi
 
-				XADBILOG "Dex Dump Power by hluwa"
 				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 
 				;;
@@ -330,9 +344,15 @@ function xadb(){
 	# show device basic info
 	if [ "$1" = "device" ];then
 		case $2 in
+
 			imei )
 				imei=`xadb shell service call iphonesubinfo 1 | awk -F "'" '{print $2}' | sed '1 d' | tr -d '.' | awk '{print}' ORS=`
 				echo "$imei"
+				;;
+
+			abilist )
+				abilist=`xadb shell getprop ro.product.cpu.abilist | tr -d '\r' `
+				echo "$abilist"
 				;;
 			
 			*)
@@ -616,7 +636,7 @@ function xadb(){
 	# kill process by name
 	if [[ "$1" = "kill" ]]; then
 		process_name=$2
-		live=`xadb sudo "ps" | grep $process_name | awk '{print $9}' | tr -d '\r'`
+		live=`xadb sudo "ps" | tr -d '\r' | grep $process_name | awk '{print $9}'`
 		# echo $process_name
 		if [[ -n "$live" && "$live" = "$process_name" ]]; then
 			xadb sudo "killall -9 $process_name"
