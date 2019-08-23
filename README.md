@@ -47,7 +47,7 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 ```
 adb device   [imei]                              show connected android device basic info 
 adb app      [sign/so/pid/apk/debug/dump]        show current app, debug and dump dex  
-adb xlog     [package]                           logcat just current app or special package 
+adb xlog     [package]                           logcat just current app or special pid 
 adb debug    [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/gdb debug enviroment 
 adb frida/64 start frida server on device        		 
 adb pcat     [remote-file]                       copy device file to local 
@@ -55,7 +55,7 @@ adb pstree   show the process tree of device
 adb sign     [local-apk-file]                    show sign of local apk file 
 adb agent    [clean/reinstall]                   clean caches and reinstall agent 
 adb -h       show this help usage               		 
-adb update   update xadb for new version! 
+adb update   update xadb for new version!
 ```
 
 - adb device 
