@@ -363,6 +363,7 @@ function xadb(){
 				manufacturer=`xadb shell getprop ro.product.manufacturer | tr -d '\r'`
 				abilist=`xadb shell getprop ro.product.cpu.abilist | tr -d '\r' `
 				imei=`xadb device imei | tr -d '\r' `
+				android_id=`xadb shell settings get secure android_id | tr -d '\r' `
 				sdk_api=`xadb shell getprop ro.build.version.sdk | tr -d '\r' `
 				os_ver=`xadb shell getprop ro.build.version.release | tr -d '\r' `
 				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}' | tr -d '\r'`
@@ -379,6 +380,7 @@ function xadb(){
 				printf "%-20s %-20s \n" "os version" "$os_ver"
 				printf "%-20s %-20s \n" "serialno" "$serialno"
 				printf "%-20s %-20s \n" "imei" "$imei"
+				printf "%-20s %-20s \n" "android_id" "$android_id"
 				printf "%-20s %-20s \n" "can debug?" "$debug"
 
 			;;
