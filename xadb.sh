@@ -366,6 +366,7 @@ function xadb(){
 				sdk_api=`xadb shell getprop ro.build.version.sdk | tr -d '\r' `
 				os_ver=`xadb shell getprop ro.build.version.release | tr -d '\r' `
 				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}' | tr -d '\r'`
+				wifi_mac=`xadb shell cat /sys/class/net/wlan0/address | tr -d '\r'`
 				debug=`xadb shell getprop ro.debuggable | tr -d '\r'`
 
 				printf "%-20s %-20s \n" "model" "$model"
@@ -374,6 +375,7 @@ function xadb(){
 				printf "%-20s %-20s \n" "abilist" "$abilist"
 				printf "%-20s %-20s \n" "sdk" "$sdk_api"
 				printf "%-20s %-20s \n" "wifi ipv4" "$wifi_ip"
+				printf "%-20s %-20s \n" "wifi mac" "$wifi_mac"
 				printf "%-20s %-20s \n" "os version" "$os_ver"
 				printf "%-20s %-20s \n" "serialno" "$serialno"
 				printf "%-20s %-20s \n" "imei" "$imei"
