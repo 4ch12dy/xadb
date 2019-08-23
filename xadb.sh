@@ -660,7 +660,19 @@ function xadb(){
 		APPPID=$2
 		APPID=`xadb app package | tr -d '\r'`
 		XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
-		xadb logcat --pid=$APPPID
+		
+		isLogcatSupportPID=`adb logcat -x 2>&1 | grep -q "Only prints logs from the given pid" && echo "1" || echo "0"`
+
+		if [[ $isLogcatSupportPID = "1" ]]; then
+			XADBILOG "logcat support --pid option, so use origin to filter pid"
+		 	xadb logcat --pid=$APPPID
+
+		else
+			XADBILOG "logcat not support --pid option, so use xia0PIDFilter to filter pid"
+			xadb logcat | awk '{if($3 == pid){print $0}}' pid="$APPPID"
+		fi
+
+		# adb logcat --pid=1234 | grep -q "Unrecognized Option" && echo "0" || echo "1"  & sleep 5; kill $!)
 		return
 	fi
 
