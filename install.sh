@@ -5,6 +5,7 @@ shell_file=$shell_root_dir"/"$shell_file_name
 
 bash_profile=$HOME"/.bash_profile"
 zsh_profile=$HOME"/.zshrc"
+mingw_profile="$HOME/.bash_profile"
 
 #Please Set the Android SDK Path
 ###############################
@@ -62,6 +63,12 @@ elif [[ "$SHELL" = "/bin/bash" ]]; then
 
 	sh_profile=$bash_profile
 
+elif [[ "$SHELL" = "/usr/bin/bash" ]]; then
+	isMINGW=`uname -a  | grep -q MINGW && echo "1" || echo "0"`
+	if [[ $isMINGW = "1" ]]; then
+		sh_profile=$mingw_profile
+	fi
+	
 else
 	echo "Not Support shell:$SHELL"
 	exit

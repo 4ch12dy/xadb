@@ -112,8 +112,8 @@ function XADBCheckxia0(){
 		return
 	fi
 
-	script="[ -d /sdcard/xia0 ] || (mkdir -p /sdcard/xia0)"
-	$ADB -d shell $script
+	script='[ -d /sdcard/xia0 ] || (mkdir -p /sdcard/xia0)'
+	$ADB -d shell "$script"
 
 	ret=`$ADB -d shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0"`
 	if [[ "$ret" = "0" ]]; then
@@ -568,11 +568,11 @@ function xadb(){
 
 	if [[ "$1" =~ "frida" ]]; then
 		# https://github.com/frida/frida/releases
-		script="find /sdcard/xia0/frida -type f -name \"frida*arm\""
-		server=`xadb shell $script | awk -F'/' '{print $NF}' | tr -d '\r'`
+		script="find '/sdcard/xia0/frida' -type f -name \"frida*arm\""
+		server=`xadb shell "$script" | awk -F'/' '{print $NF}' | tr -d '\r'`
 
-		script="find /sdcard/xia0/frida -type f -name \"frida*arm64\""
-		server64=`xadb shell $script | awk -F'/' '{print $NF}' | tr -d '\r' `
+		script="find '/sdcard/xia0/frida' -type f -name \"frida*arm64\""
+		server64=`xadb shell "$script" | awk -F'/' '{print $NF}' | tr -d '\r' `
 
 		XADBILOG "Current frida-server version, for more version visit:[https://github.com/frida/frida/releases]"
 		printf "[%5s]: %-50s\n" "arm" $server
@@ -584,25 +584,25 @@ function xadb(){
 		xadb forward tcp:27042 tcp:27042
 
 		if [[ "$1" = "frida64" ]]; then
-			ret=`adb shell "[ -f /data/local/tmp/$server64 ] && echo "1" || echo "0"" | tr -d '\r'`
+			ret=`adb shell "[ -f '/data/local/tmp/$server64' ] && echo "1" || echo "0"" | tr -d '\r'`
 
 			if [[ "$ret" = "0" ]]; then
-				xadb sudo "cp /sdcard/xia0/frida/$server64 /data/local/tmp/"
+				xadb sudo "cp '/sdcard/xia0/frida/$server64' '/data/local/tmp/'"
 			fi
 
-			xadb sudo "chmod 777 /data/local/tmp/$server64"
-			xadb sudo "/data/local/tmp/$server64"
+			xadb sudo "chmod 777 '/data/local/tmp/$server64'"
+			xadb sudo "'/data/local/tmp/$server64'"
 			return
 		fi
 
-		ret=`adb shell "[ -f /data/local/tmp/$server ] && echo "1" || echo "0"" | tr -d '\r' `
+		ret=`adb shell "[ -f '/data/local/tmp/$server' ] && echo "1" || echo "0"" | tr -d '\r' `
 
 		if [[ "$ret" = "0" ]]; then
-			xadb sudo "cp /sdcard/xia0/frida/$server /data/local/tmp/"
+			xadb sudo "cp '/sdcard/xia0/frida/$server' '/data/local/tmp/'"
 		fi
 
-		xadb sudo "chmod 777 /data/local/tmp/$server"
-		xadb sudo "/data/local/tmp/$server"
+		xadb sudo "chmod 777 '/data/local/tmp/$server'"
+		xadb sudo "'/data/local/tmp/$server'"
 
 		return
 	fi

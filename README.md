@@ -32,6 +32,8 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 
 - [2019/08/22] # xadb集成第一代壳的脱壳功能（power by hluwa）
 
+- [2019/09/03] # xadb增加了对Windows在MINGW64 shell执行环境的支持（若有bug，请issue）
+
   
 
 #### 支持的命令
