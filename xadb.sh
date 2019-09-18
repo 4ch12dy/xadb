@@ -323,7 +323,7 @@ function xadb(){
 					python "$XADB_ROOT_DIR/script/dumpdex.py" $APPID
 
 				else
-					
+
 					APPPID=`xadb app pid`
 					python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 				fi
@@ -587,7 +587,7 @@ function xadb(){
 		xadb forward tcp:27042 tcp:27042
 
 		if [[ "$1" = "frida64" ]]; then
-			ret=`adb shell "[ -f '/data/local/tmp/$server64' ] && echo "1" || echo "0"" | tr -d '\r'`
+			ret=`xadb shell "[ -f '/data/local/tmp/$server64' ] && echo "1" || echo "0"" | tr -d '\r'`
 
 			if [[ "$ret" = "0" ]]; then
 				xadb sudo "cp '/sdcard/xia0/frida/$server64' '/data/local/tmp/'"
@@ -598,7 +598,7 @@ function xadb(){
 			return
 		fi
 
-		ret=`adb shell "[ -f '/data/local/tmp/$server' ] && echo "1" || echo "0"" | tr -d '\r' `
+		ret=`xadb shell "[ -f '/data/local/tmp/$server' ] && echo "1" || echo "0"" | tr -d '\r' `
 
 		if [[ "$ret" = "0" ]]; then
 			xadb sudo "cp '/sdcard/xia0/frida/$server' '/data/local/tmp/'"
@@ -618,9 +618,22 @@ function xadb(){
 	fi
 
 	if [[ "$1" = "scp" ]]; then
-		filepath=$2
-		filename=${filepath##*/}
-		xadb xdo "cat $2" > $filename
+
+		file1=$2
+		file2=$3
+
+		isRemoteFile=`adb shell "[ -f $file1 ] && echo "1" || echo "0"" | tr -d '\r'`
+
+		if [[ "$isRemoteFile" = "0" ]]; then
+			echo "$file1 is local file, so copy it to device"
+			xadb push "$file1" "$file2"
+		else
+			filename=${file1##*/}
+			echo "$file1 is remote file, so copy it to local"
+			xadb sudo "cp $file1 /sdcard"
+			xadb pull "/sdcard/$filename" "$file2"
+			xadb sudo "rm /sdcard/$filename"
+		fi
 		return
 	fi
 
@@ -740,7 +753,8 @@ function xadb(){
 		printf "adb %-8s %-35s %-20s \n" "xlog" "[package]" "logcat just current app or special pid"
 		printf "adb %-8s %-35s %-20s \n" "debug" "[ida/ida64,lldb/lldb64, gdb/gdb64]" "open debug and setup ida/lldb/gdb debug enviroment"
 		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
-		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local"
+		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local (!!! Will Delete use scp replacement)"
+		printf "adb %-8s %-35s %-20s \n" "scp" "local/remote remote/local" "copy device file to local or copy local file to device"
 		printf "adb %-8s %-35s 		 \n" "pstree" "show the process tree of device"
 		printf "adb %-8s %-35s %-20s \n" "sign" "[local-apk-file]" "show sign of local apk file"
 		printf "adb %-8s %-35s %-20s \n" "agent" "[clean/reinstall]" "clean caches and reinstall agent"
