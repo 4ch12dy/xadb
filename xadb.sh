@@ -316,14 +316,17 @@ function xadb(){
 				# sleep for frida launch
 				sleep 5
 
-				if [ -z "$3" ]; then
-					APPPID=`xadb app pid`
+
+				if [[ "$3" = "spawn" ]]; then
+
+					APPID=`xadb app package`
+					python "$XADB_ROOT_DIR/script/dumpdex.py" $APPID
 
 				else
-					APPPID=$3
+					
+					APPPID=`xadb app pid`
+					python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 				fi
-
-				python "$XADB_ROOT_DIR/script/dumpdex.py" $APPPID
 
 				XADBILOG "Dex Dump Done! Happy Reversing~"
 				;;
@@ -608,6 +611,13 @@ function xadb(){
 	fi
 
 	if [[ "$1" = "pcat" ]]; then
+		filepath=$2
+		filename=${filepath##*/}
+		xadb xdo "cat $2" > $filename
+		return
+	fi
+
+	if [[ "$1" = "scp" ]]; then
 		filepath=$2
 		filename=${filepath##*/}
 		xadb xdo "cat $2" > $filename

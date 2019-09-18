@@ -2,21 +2,39 @@ import json
 import os
 import sys
 import frida
+import time
+import re
 
-if len(sys.argv) > 1:
-	app_pid = sys.argv[1]
-	print("[Dumpdex]: You specail the pid "+app_pid)
+
+if len(sys.argv) <= 1:
+	print("[Dumpdex]: you should pass pid/packageName")
+	exit()
 	
 device = frida.get_usb_device()
 pkg_name = device.get_frontmost_application().identifier
+# check is package or pid
 
-# pid = device.spawn(pkg_name)
+pattern = re.compile(r'^\d+$', re.I)
+m = pattern.match(sys.argv[1])
 
-# if customize the pid, use this pid. Such as app has mutiple pid
-if ('app_pid' in locals() or 'app_pid' in globals()) and app_pid:
-	session = device.attach(int(app_pid))
+if m:
+
+	app_pid = sys.argv[1]
+	print("[Dumpdex]: you specail the pid:" + app_pid)
+	# if customize the pid, use this pid. Such as app has mutiple pid
+	if ('app_pid' in locals() or 'app_pid' in globals()) and app_pid:
+		session = device.attach(int(app_pid))
+	else:
+		session = device.attach(pkg_name)
 else:
-	session = device.attach(pkg_name)
+	pkg_name = sys.argv[1]
+	print("[Dumpdex]: you specail the package name:" + pkg_name + ", so spawn it and sleep 50s for launch completely")
+	
+	pid = device.spawn(pkg_name)
+
+	time.sleep(50);
+
+	session = device.attach(pid)
 
 script = session.create_script(open(open(os.path.expanduser("~/.xadb/rootdir")).read().strip() + "/script/agent.js").read())
 script.load()
