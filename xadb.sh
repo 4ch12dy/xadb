@@ -115,22 +115,22 @@ function XADBCheckxia0(){
 	script='[ -d /sdcard/xia0 ] || (mkdir -p /sdcard/xia0)'
 	$ADB -d shell "$script"
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0"`
+	ret=`$ADB -d shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
 		$ADB -d push "$XADB_ROOT_DIR/frida" /sdcard/xia0
 	fi
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/tools ] && echo 1 || echo 0"`
+	ret=`$ADB -d shell "[ -d /sdcard/xia0/tools ] && echo 1 || echo 0" | tr -d '\r' `
 	if [[ "$ret" = "0" ]]; then
 		$ADB -d push "$XADB_ROOT_DIR/tools" /sdcard/xia0
 	fi
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/debug-server ] && echo 1 || echo 0"`
+	ret=`$ADB -d shell "[ -d /sdcard/xia0/debug-server ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
 		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
 	fi
-
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/script ] && echo 1 || echo 0"`
+ 
+	ret=`$ADB -d shell "[ -d /sdcard/xia0/script ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
 		$ADB -d push "$XADB_ROOT_DIR/script" /sdcard/xia0
 	fi
@@ -370,6 +370,7 @@ function xadb(){
 				sdk_api=`xadb shell getprop ro.build.version.sdk | tr -d '\r' `
 				os_ver=`xadb shell getprop ro.build.version.release | tr -d '\r' `
 				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}' | tr -d '\r'`
+				# (xadb shell ip address show wlan0 | grep "link/ether" | awk '{printf $2}')
 				wifi_mac=`xadb shell cat /sys/class/net/wlan0/address | tr -d '\r'`
 				debug=`xadb shell getprop ro.debuggable | tr -d '\r'`
 
