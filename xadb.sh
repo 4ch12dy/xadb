@@ -409,6 +409,7 @@ function xadb(){
 		echo "====>[gdb]$ target remote :23946"
 		echo "====>[gdb]$ handle SIG32 nostop noprint"
 		echo "====>[lldb]$ platform select remote-android"
+		echo "====>[lldb]$ pro hand -p true -s false SIGBUS"
 		echo "====>[lldb]$ platform connect unix-abstract-connect:///data/local/tmp/debug.sock"
 		echo "====>[lldb]$ process attach --pid=14396 or platform process attach -p 8098"
 		echo "**********************************************************************************"
