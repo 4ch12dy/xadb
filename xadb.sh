@@ -381,8 +381,8 @@ function xadb(){
 				sdk_api=`xadb shell getprop ro.build.version.sdk | tr -d '\r' `
 				os_ver=`xadb shell getprop ro.build.version.release | tr -d '\r' `
 				wifi_ip=`xadb shell ip addr show wlan0 | grep "inet\s" | awk -F'/' '{printf $1}' | awk '{printf $2}' | tr -d '\r'`
-				# (xadb shell ip address show wlan0 | grep "link/ether" | awk '{printf $2}')
-				wifi_mac=`xadb shell cat /sys/class/net/wlan0/address | tr -d '\r'`
+				wifi_mac=$(xadb shell ip address show wlan0 | grep "link/ether" | awk '{printf $2}')
+				# wifi_mac=`xadb shell cat /sys/class/net/wlan0/address | tr -d '\r'`
 				debug=`xadb shell getprop ro.debuggable | tr -d '\r'`
 
 				printf "%-20s %-20s \n" "model" "$model"
