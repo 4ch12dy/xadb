@@ -170,12 +170,18 @@ function xadb(){
 			pid )
 				APPID=`xadb app package | tr -d '\r'`
 				APPPID=`xadb xdo ps | tr -d '\r' | grep  "$APPID$" | awk '{print $2}'`
+				if [[ -z $APPPID || "$APPPID" = "" ]]; then
+					APPPID=`xadb shell ps | tr -d '\r' | grep  "$APPID$" | awk '{print $2}'`
+				fi
 				echo $APPPID
 				;;
 
 			pidAll )
 				APPID=`xadb app package | tr -d '\r'`
 				APPPID=`xadb xdo ps | tr -d '\r' | grep  "$APPID" | awk '{print $2}'`
+				if [[ -z $APPPID || "$APPPID" = "" ]]; then
+					APPPID=`xadb shell ps | tr -d '\r' | grep  "$APPID$" | awk '{print $2}'`
+				fi
 				echo $APPPID
 				;;
 				
