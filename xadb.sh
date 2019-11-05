@@ -164,7 +164,11 @@ function xadb(){
 				;;
 
 			activity )
-				adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
+				if [[ $3 = "main" ]]; then
+					adb app info | tr -d '\r' | grep -A1 "android.intent.action.MAIN" | tr -d '\n' |awk '{print $3}'
+				else
+					adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
+				fi
 				;;
 
 			pid )
@@ -340,11 +344,12 @@ function xadb(){
 				APPID=`xadb app package`
 				APPPID=`xadb app pidAll`
 				APPACTIVITY=`xadb app activity`
+				APPMAINACTIVITY=`xadb app activity main`
 				APPDIR=`xadb app info | grep codePath`
 				APPDIR=${APPDIR##*codePath=}
 				APPDATADIR=`xadb app info | grep dataDir`
 				APPDATADIR=${APPDATADIR##*dataDir=}
-				echo -e "app=$APPID\npid=$APPPID\nactivity=$APPACTIVITY\nappdir=$APPDIR\ndatadir=$APPDATADIR"
+				echo -e "app=$APPID\npid=$APPPID\nactivity=$APPACTIVITY\nmainActivity=$APPMAINACTIVITY\nappdir=$APPDIR\ndatadir=$APPDATADIR"
 				;;
 		esac
 
