@@ -154,7 +154,12 @@ function xadb(){
 		case $2 in
 			package )
 				# APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk -F'/' '{print $1}' | awk '{print $NF}'`
-				APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o | awk -F'/' '{print $1}'`
+				app_count=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o -c`
+				if [[ $app_count -eq 2 ]]; then
+					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep -v "Waiting For Debugger" | grep '\b\w*\.[^\}]*' -o | awk -F'/' '{print $1}'`
+				else
+					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o | awk -F'/' '{print $1}'`
+				fi
 
 				if [[ "$APPID" = "Waiting" ]]; then
 					APPID=`xadb shell dumpsys window | grep -i  mCurrentFocus | awk '{print $6}' | awk -F'}' '{print $1}'`
@@ -167,7 +172,7 @@ function xadb(){
 				if [[ $3 = "main" ]]; then
 					adb app info | tr -d '\r' | grep -A1 "android.intent.action.MAIN" | tr -d '\n' |awk '{print $3}'
 				else
-					adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
+					adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | grep -v "Waiting For Debugger" | awk '{print $3}' | awk -F'}' '{print $1}'
 				fi
 				;;
 
