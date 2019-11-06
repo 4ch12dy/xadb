@@ -172,7 +172,16 @@ function xadb(){
 				if [[ $3 = "main" ]]; then
 					adb app info | tr -d '\r' | grep -A1 "android.intent.action.MAIN" | tr -d '\n' |awk '{print $3}'
 				else
-					adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | grep -v "Waiting For Debugger" | awk '{print $3}' | awk -F'}' '{print $1}'
+					app_count=`xadb shell dumpsys window | grep -i  mCurrentFocus | grep '\b\w*\.[^\}]*' -o -c`
+					if [[ $app_count -eq 2 ]]; then
+						adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | grep -v "Waiting For Debugger" | awk '{print $3}' | awk -F'}' '{print $1}'
+					else
+						if  adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | grep -q "Waiting For Debugger" ; then
+							echo "[no activity found for app in debugging status]"
+						else
+							adb shell dumpsys window | tr -d '\r' | grep -i  mCurrentFocus | awk '{print $3}' | awk -F'}' '{print $1}'
+						fi
+					fi
 				fi
 				;;
 
