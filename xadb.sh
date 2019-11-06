@@ -253,7 +253,7 @@ function xadb(){
 
 				local_apk_file=`xadb app apk_in $APP_ID`
 
-				XADBILOG "The APK File From Device:$local_apk_file"
+				XADBILOG "pull app apk from device done:$local_apk_file"
 				;;
 
 			apk_in )
@@ -265,16 +265,19 @@ function xadb(){
 				fi
 
 				if [[ "$APP_ID" =~ "StatusBar" ]];then
+					XADBELOG "now in statusBar, please unlock or focus on app"
 					return
 				fi
 
-				base_apk=`xadb shell pm path $APP_ID | tr -d '\r' | awk -F':' '{printf $2}'`
+				base_apk=`xadb shell pm path $APP_ID | tr -d '\r' | grep "base.apk" |awk -F':' '{printf $2}'`
+				# XADBILOG "found base.apk:$base_apk and start pull it from device"
 
 				now=`XADBTimeNow`
-
 				xadb pull $base_apk $APP_ID-$now.apk 1>/dev/null
 				current_dir=`pwd`
-				echo "$current_dir/$APP_ID-$now.apk"
+				lcoal_apk="$current_dir/$APP_ID-$now.apk"
+				echo $lcoal_apk
+				# XADBILOG "pull apk form device done in:$lcoal_apk"
 				;;
 			sign )
 				if [ -z "$3" ]; then
