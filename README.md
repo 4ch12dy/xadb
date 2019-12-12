@@ -25,6 +25,17 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 
   `source ~/.zshrc`
 
+#### 注意事项
+
+由于项目中提供了一些bin文件，导致文件有点大。不过仍然建议使用git的方式获取项目。
+
+debug-server、frida以及其他目录文件，你可以根据你的环境自行替换。若已经push到远端设备，你可以在电脑替换目录以后，使用以下命令更新这些文件
+
+```shell
+adb agent reinstall // 删除Android设备上的所有xadb相关文件，并且从电脑端重新导入安装
+adb agent clean // 删除Android设备上/data/local/tmp下的所有文件
+```
+
 
 
 
@@ -34,17 +45,11 @@ Android逆向自动化操作脚本，一键开启调试(ida/gdb/lldb)，一键�
 
 - [2019/09/03] # xadb增加了对Windows在MINGW64 shell执行环境的支持（若有bug，请issue）
 
-  
-
 #### 支持的命令
 
 > 说明：adb兼容内置的所有命令。在分别在pixel2 Android8 和pixel3 Android9上面测试通过。
 >
-> mprop 只编译了64位的版本，若你为32位的设备，可以自行编译。
->
 > 在source目录下面提供了mprop的源码及build脚本
-
-**关于脱壳，之前基于frida的脱壳脚本只能脱一代壳且兼容性不高，就暂时没放出来。如果有大佬有比较好的方式，可以pr或者联系我完善下这部分。**
 
 ```
 adb device   [imei]                              show connected android device basic info
