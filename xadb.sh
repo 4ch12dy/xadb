@@ -439,6 +439,7 @@ function xadb(){
 		echo "====>[lldb]$ platform select remote-android"
 		echo "====>[lldb]$ pro hand -p true -s false SIGBUS"
 		echo "====>[lldb]$ platform connect unix-abstract-connect:///data/local/tmp/debug.sock"
+		echo "====>[lldb]$ platform connect connect://remote:5678"
 		echo "====>[lldb]$ process attach --pid=14396 or platform process attach -p 8098"
 		echo "**********************************************************************************"
 
@@ -575,7 +576,14 @@ function xadb(){
 				xadb sudo "chmod 777 /data/local/tmp/lldb-server"
 
 				# xadb shell /data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock
-				xadb sudo "/data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
+
+				if [[ "$3" = "port" ]]; then
+					xadb forward tcp:5678 tcp:5678
+					xadb sudo "/data/local/tmp/lldb-server platform --listen \"*:5678\" --server"
+				else
+					xadb sudo "/data/local/tmp/lldb-server platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
+				fi
+
 				return
 				;;
 
@@ -588,8 +596,12 @@ function xadb(){
 				
 				xadb sudo "chmod 777 /data/local/tmp/lldb-server64"
 
-				# xadb shell /data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock
-				xadb sudo "/data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
+				if [[ "$3" = "port" ]]; then
+					xadb forward tcp:5678 tcp:5678
+					xadb sudo "/data/local/tmp/lldb-server64 platform --listen \"*:5678\" --server"
+				else
+					xadb sudo "/data/local/tmp/lldb-server64 platform --server --listen unix-abstract:///data/local/tmp/debug.sock"
+				fi
 				;;
 			* )
 				XADBELOG "\"$2\" debug server not found."
