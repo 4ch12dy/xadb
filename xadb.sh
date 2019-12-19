@@ -684,10 +684,10 @@ function xadb(){
 		cmd=${@:2:$#}
 		XADBILOG "Run \"$cmd\""
 
-		xadb shell su -c "$cmd" 2>/dev/null;
+		xadb shell "su -c $cmd" #2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
-			xadb shell su 0/0 "$cmd" 2>/dev/null;
+			xadb shell su 0/0 "$cmd" #2>/dev/null;
 		fi
 		return
 	fi
