@@ -681,8 +681,9 @@ function xadb(){
 
 	# sudo 
 	if [ "$1" = "sudo" ]; then
-		cmd=$2
+		cmd=${@:2:$#}
 		XADBILOG "Run \"$cmd\""
+
 		xadb shell su -c "$cmd" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
@@ -693,7 +694,7 @@ function xadb(){
 
 	# xdo == sudo. just for clean output cmd. NO "Run $cmd" Log
 	if [[ "$1" = "xdo" ]]; then
-		cmd=$2
+		cmd=${@:2:$#}
 		xadb shell su -c "$cmd" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
