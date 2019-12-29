@@ -52,23 +52,55 @@ adb agent clean // 删除Android设备上/data/local/tmp下的所有文件
 > 在source目录下面提供了mprop的源码及build脚本
 
 ```
-adb device   [imei]                              show connected android device basic info
-adb app      [sign/so/pid/apk/debug/dump]        show current app, debug and dump dex
-adb xlog     [package]                           logcat just current app or special pid
-adb debug    [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/gdb debug enviroment
-adb frida/64 start frida server on device
-adb pcat     [remote-file]                       copy device file to local (!!! Will Delete use scp replacement)
-adb scp      local/remote remote/local           copy device file to local or copy local file to device
-adb pstree   show the process tree of device
-adb sign     [local-apk-file]                    show sign of local apk file
-adb agent    [clean/reinstall]                   clean caches and reinstall agent
-adb -h       show this help usage
-adb update   update xadb for new version!
+ device   
+	 [imei]                              show connected android device basic info 
+ serial   
+	 [-s/-r]                             set/remove adb connect device serial such as emulator connecting 
+ app      
+	 [sign/so/pid/apk/debug/dump]        show current app, debug and dump dex  
+ xlog     
+	 [package]                           logcat just current app or special pid 
+ debug    
+	 [ida/ida64,lldb/lldb64, gdb/gdb64]  open debug and setup ida/lldb/gdb debug enviroment 
+ frida/64 
+	 start frida server on device        		 
+ scp      
+	 local/remote remote/local           copy device file to local or copy local file to device 
+ pstree   
+	 show the process tree of device     		 
+ sign     
+	 [local-apk-file]                    show sign of local apk file 
+ agent    
+	 [clean/reinstall]                   clean caches and reinstall agent 
+ -h       
+	 show this help usage               		 
+ update   
+	 update xadb for new version!
 ```
 
 - adb device 
 
   获取一些设备的基本信息：品牌、imei、支持的架构、系统版本、sdk版本、wifi地址、是否开启调试？等
+
+- adb serial [set/remove]
+
+  指定设备连接的序列号（通过`adb devices`获取），尤其在需要连接模拟器的时候。当设置以后，adb指定选择设置的序列号设备连接。默认为数据线连接的设备，恢复默认需要remove之前设置的序列号。
+
+  示例用法
+
+  ```shell
+  xia0 ~ $ adb devices # 列举所有可连接的设备序列号
+  List of devices attached
+  88VX03A6L	device
+  emulator-5554	device
+  
+  adb serial -s emulator-5554 #连接指定序列号的设备
+  adb serial -r #移除设定的序列号
+  
+  adb device #默认数据线连接的设备
+  ```
+
+  
 
 - adb app [sign/so/pid/apk/debug/dump/screen]
 

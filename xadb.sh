@@ -11,6 +11,8 @@ XADB_ROOT_DIR=`cat ~/.xadb/rootdir`
 
 ANDROID_SDK_PATH=`cat ~/.xadb/sdk-path`
 
+XADB_DEVICE_SERIAL="$HOME/.xadb/device-serial"
+
 ADB=""
 
 if [[ -e "$HOME/.xadb/adb-path" ]];then
@@ -48,7 +50,7 @@ function XADBTimeNow(){
 }
 
 function XADBDeviceState(){
-	device=`$ADB -d get-state 2>/dev/null`
+	device=`XADB get-state 2>/dev/null`
 	echo $device
 
 }
@@ -84,6 +86,11 @@ function XADBCheckUpdate(){
 }
 
 
+function XADB(){
+	test -f $XADB_DEVICE_SERIAL && $ADB -s $(cat $XADB_DEVICE_SERIAL) $@ || $ADB -d $@
+}
+
+
 function XADBCheckxia0(){
 	if [[  $(XADBDeviceState) != "device" ]]; then
 		return
@@ -93,46 +100,46 @@ function XADBCheckxia0(){
 		read -p "This cmd will delete all file in /data/local/tmp, continue [yes/no]? : " yes_or_no
 		
 		if [[ "$yes_or_no" = "yes" ]]; then
-			$ADB -d shell su -c "rm -fr /data/local/tmp/*"
+			XADB shell su -c "rm -fr /data/local/tmp/*"
 			if [[ "$?" != "0" ]]; then
-				$ADB -d shell su 0/0 "rm -fr /data/local/tmp/*"
+				XADB shell su 0/0 "rm -fr /data/local/tmp/*"
 			fi
 		fi
 		return
-		# $ADB -d shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
+		# XADB shell "[ -d /sdcard/xia0 ] && rm -fr /sdcard/xia0"
 		# return
 	fi
 
 	if [[ "$1" = "force" ]]; then
 		XADBCheckxia0 clean
-		$ADB -d push "$XADB_ROOT_DIR/frida" /sdcard/xia0
-		$ADB -d push "$XADB_ROOT_DIR/tools" /sdcard/xia0
-		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
-		$ADB -d push "$XADB_ROOT_DIR/script" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/frida" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/tools" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/script" /sdcard/xia0
 		return
 	fi
 
 	script='[ -d /sdcard/xia0 ] || (mkdir -p /sdcard/xia0)'
-	$ADB -d shell "$script"
+	XADB shell "$script"
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0" | tr -d '\r'`
+	ret=`XADB shell "[ -d /sdcard/xia0/frida ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$XADB_ROOT_DIR/frida" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/frida" /sdcard/xia0
 	fi
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/tools ] && echo 1 || echo 0" | tr -d '\r' `
+	ret=`XADB shell "[ -d /sdcard/xia0/tools ] && echo 1 || echo 0" | tr -d '\r' `
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$XADB_ROOT_DIR/tools" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/tools" /sdcard/xia0
 	fi
 
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/debug-server ] && echo 1 || echo 0" | tr -d '\r'`
+	ret=`XADB shell "[ -d /sdcard/xia0/debug-server ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/debug-server" /sdcard/xia0
 	fi
  
-	ret=`$ADB -d shell "[ -d /sdcard/xia0/script ] && echo 1 || echo 0" | tr -d '\r'`
+	ret=`XADB shell "[ -d /sdcard/xia0/script ] && echo 1 || echo 0" | tr -d '\r'`
 	if [[ "$ret" = "0" ]]; then
-		$ADB -d push "$XADB_ROOT_DIR/script" /sdcard/xia0
+		XADB push "$XADB_ROOT_DIR/script" /sdcard/xia0
 	fi
 
 }
@@ -665,7 +672,7 @@ function xadb(){
 		file2=$3
 
 		isRemoteFile=`adb shell "[ -f $file1 ] && echo "1" || echo "0"" | tr -d '\r'`
-
+		echo $isRemoteFile
 		if [[ "$isRemoteFile" = "0" ]]; then
 			echo "$file1 is local file, so copy it to device"
 			xadb push "$file1" "$file2"
@@ -791,33 +798,48 @@ function xadb(){
 
  	# usage 
 	if [[  "$1" = "-h" ]]; then
-		printf "adb %-8s %-35s %-20s \n" "device" "[imei]" "show connected android device basic info" 
-		printf "adb %-8s %-35s %-20s \n" "app" "[sign/so/pid/apk/debug/dump]" "show current app, debug and dump dex "
-		printf "adb %-8s %-35s %-20s \n" "xlog" "[package]" "logcat just current app or special pid"
-		printf "adb %-8s %-35s %-20s \n" "debug" "[ida/ida64,lldb/lldb64, gdb/gdb64]" "open debug and setup ida/lldb/gdb debug enviroment"
-		printf "adb %-8s %-35s 		 \n" "frida/64" "start frida server on device"
-		printf "adb %-8s %-35s %-20s \n" "pcat" "[remote-file]" "copy device file to local (!!! Will Delete use scp replacement)"
-		printf "adb %-8s %-35s %-20s \n" "scp" "local/remote remote/local" "copy device file to local or copy local file to device"
-		printf "adb %-8s %-35s 		 \n" "pstree" "show the process tree of device"
-		printf "adb %-8s %-35s %-20s \n" "sign" "[local-apk-file]" "show sign of local apk file"
-		printf "adb %-8s %-35s %-20s \n" "agent" "[clean/reinstall]" "clean caches and reinstall agent"
-		printf "adb %-8s %-35s		 \n" "-h" "show this help usage"
-		printf "adb %-8s %-35s		 \n" "update" "update xadb for new version!"
+		printf " %-8s \n\t %-35s %-20s \n" "device" "[imei]" "show connected android device basic info"
+		printf " %-8s \n\t %-35s %-20s \n" "serial" "[-s/-r]" "set/remove adb connect device serial such as emulator connecting"
+		printf " %-8s \n\t %-35s %-20s \n" "app" "[sign/so/pid/apk/debug/dump]" "show current app, debug and dump dex "
+		printf " %-8s \n\t %-35s %-20s \n" "xlog" "[package]" "logcat just current app or special pid"
+		printf " %-8s \n\t %-35s %-20s \n" "debug" "[ida/ida64,lldb/lldb64, gdb/gdb64]" "open debug and setup ida/lldb/gdb debug enviroment"
+		printf " %-8s \n\t %-35s 		 \n" "frida/64" "start frida server on device"
+		printf " %-8s \n\t %-35s %-20s \n" "scp" "local/remote remote/local" "copy device file to local or copy local file to device"
+		printf " %-8s \n\t %-35s 		 \n" "pstree" "show the process tree of device"
+		printf " %-8s \n\t %-35s %-20s \n" "sign" "[local-apk-file]" "show sign of local apk file"
+		printf " %-8s \n\t %-35s %-20s \n" "agent" "[clean/reinstall]" "clean caches and reinstall agent"
+		printf " %-8s \n\t %-35s		 \n" "-h" "show this help usage"
+		printf " %-8s \n\t %-35s		 \n" "update" "update xadb for new version!"
 		return
 	fi
 
-	$ADB -d $@
+	XADB $@
 }
 
 function adb(){
+	if [[ "$1" = "serial" ]]; then
+		if [[ "$2" = "-s" || "$2" = "set" ]]; then
+
+			echo "$3" > $XADB_DEVICE_SERIAL
+
+		elif [[ "$2" = "-r" || "$2" = "remove" ]]; then
+			test -f $XADB_DEVICE_SERIAL && rm $XADB_DEVICE_SERIAL
+		else
+			test -f $XADB_DEVICE_SERIAL && cat $XADB_DEVICE_SERIAL || XADBILOG "not set device serial"
+		fi
+
+		return
+	fi
+
 	if [[  "$1" != "update"  ]] && [[  "$1" != "-h"  ]]; then
 		if [[  $(XADBDeviceState) != "device" ]]; then
 			# XADBELOG "no device found, please check connect state"
 			XADBILOG "The device not found, now use original adb"
-			$ADB -d $@
+			XADB $@
 			return
 		fi
 	fi
+
 	XADBCheckxia0
 	XADBCheckUpdate
 	xadb $@
