@@ -1,7 +1,7 @@
 #!/bin/bash
 shell_root_dir=$(pwd)
 shell_file_name="xadb.sh"
-shell_file=$shell_root_dir"/"$shell_file_name
+shell_file="$shell_root_dir/$shell_file_name"
 
 bash_profile=$HOME"/.bash_profile"
 zsh_profile=$HOME"/.zshrc"
@@ -13,22 +13,21 @@ ANDROID_SDK_PATH=""
 ADB_PATH=""
 ###############################
 
-function xlog(){
-	echo "[log]: "$1
-}
+echo "==== install xadb ===="
 
-function checkSDKPath(){
+function check_sdk_path(){
 	sdk_path=$1
 	if [[ -f "$sdk_path/platform-tools/adb" ]];then
-		xlog "Found adb, Continue!"
+		echo "[+] found adb, continue!"
 	elif [[ -n $ADB_PATH ]];then
-		xlog "Found adb, Continue!"
+		echo "[+] found adb, continue!"
 	else
-		xlog "Not Found adb, Please Check the Android SDK Path."
+		echo "[-] not Found adb, please check the Android SDK path."
 		exit
 	fi
 }
-if [[ -e ~/Library/Android/sdk ]];then
+
+if [[ -e "~/Library/Android/sdk" ]];then
 	ANDROID_SDK_PATH=~/Library/Android/sdk
 fi
 
@@ -39,20 +38,19 @@ elif [[ -e $(which adb) ]]; then
 elif [[ -e ~/Library/Android/sdk ]];then
 	ANDROID_SDK_PATH=~/Library/Android/sdk
 else
-	xlog "You should Set the Android SDK Path."
+	echo "[-] you should set the Android SDK path."
 	exit
 fi
 
-checkSDKPath $ANDROID_SDK_PATH
+check_sdk_path $ANDROID_SDK_PATH
 
 if [[ ! -d ~/.xadb ]]; then
 	mkdir -p ~/.xadb
 fi
 
+echo "[*] create xadb support file"
 echo "$shell_root_dir" > ~/.xadb/rootdir
-
 echo "$ANDROID_SDK_PATH" > ~/.xadb/sdk-path
-
 echo "$ADB_PATH" > ~/.xadb/adb-path
 
 if [[ "$SHELL" = "/bin/zsh" ]]; then
@@ -70,20 +68,17 @@ elif [[ "$SHELL" = "/usr/bin/bash" ]]; then
 	fi
 	
 else
-	echo "Not Support shell:$SHELL"
+	echo "[-] not support shell:$SHELL"
 	exit
 fi
 
-# add issh.sh to shell_profile
-xlog "add \"source $shell_file\" to $sh_profile"
+echo "[+] detect current shell profile: $sh_profile"
 
-grep 'xadb.sh' $sh_profile > /dev/null
-if [ $? -eq 0 ]; then
-    xlog $sh_profile" has include "$shell_file_name" just source it."
-else
-    xlog "install..."
-    echo -e "\nsource $shell_file" >> $sh_profile
-fi
+# add xadb.sh to shell_profile
+echo "[*] add \"source $shell_file\" to $sh_profile"
+sed -i "" '/source.*xadb\.sh/d' $sh_profile 2>/dev/null
+echo -e "\nsource $shell_file" >> $sh_profile
 
-# source $sh_profile > /dev/null
-xlog "Please Run command:source $sh_profile"
+# done 
+echo "[+] install finished, you can re-source $sh_profile or open a new terminal"
+echo "======================"
