@@ -86,6 +86,10 @@ function XADBCheckUpdate(){
 }
 
 
+function XADBISEMULATOR(){
+	test -f $XADB_DEVICE_SERIAL || return 0 && (cat $XADB_DEVICE_SERIAL | grep -q "emulator" && return 1 || return 0 )
+}
+
 function XADB(){
 	test -f $XADB_DEVICE_SERIAL && $ADB -s $(cat $XADB_DEVICE_SERIAL) $@ || $ADB -d $@
 }
@@ -450,32 +454,37 @@ function xadb(){
 		echo "====>[lldb]$ process attach --pid=14396 or platform process attach -p 8098"
 		echo "**********************************************************************************"
 
-		# 判断是否开启了调试
-		isdebug=`xadb shell getprop ro.debuggable`
-		if [[ "$isdebug" = "0" ]]; then
-			XADBILOG "Not open debug, opening..."
-			ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0""`
 
-			if [[ "$ret" = "0" ]]; then
-				xadb sudo "cp /sdcard/xia0/tools/mprop /data/local/tmp/"
+		XADBISEMULATOR 
+		if [[ $? == 0 ]]; then		
+			# 判断是否开启了调试
+			isdebug=`xadb shell getprop ro.debuggable`;
+			if [[ "$isdebug" = "0" ]]; then
+				XADBILOG "Not open debug, opening..."
+				ret=`adb shell "[ -f /data/local/tmp/mprop ] && echo "1" || echo "0""`
+
+				if [[ "$ret" = "0" ]]; then
+					xadb sudo "cp /sdcard/xia0/tools/mprop /data/local/tmp/"
+				fi
+				xadb sudo "chmod 777 /data/local/tmp/mprop"
+				xadb sudo "/data/local/tmp/mprop"
+				xadb sudo "setprop ro.debuggable 1"
+				xadb sudo "/data/local/tmp/mprop -r"
+				xadb sudo "getprop ro.debuggable"
+				xadb sudo "stop"
+				sleep 2
+				xadb sudo "start"
+				sleep 5
+
+				XADBILOG "Opened debug, Retry for happy debugging!"
+				return
 			fi
-			xadb sudo "chmod 777 /data/local/tmp/mprop"
-			xadb sudo "/data/local/tmp/mprop"
-			xadb sudo "setprop ro.debuggable 1"
-			xadb sudo "/data/local/tmp/mprop -r"
-			xadb sudo "getprop ro.debuggable"
-			xadb sudo "stop"
-			sleep 2
-			xadb sudo "start"
-			sleep 5
-
-			XADBILOG "Opened debug, Retry for happy debugging!"
-			return
 		fi
 
 		# kill all server if process exsist
 		xadb kill android_server64
 		xadb kill android_server
+		xadb kill android_x86_server
 		xadb kill gdbserver
 		xadb kill gdbserver64
 		xadb kill lldb-server
@@ -483,6 +492,31 @@ function xadb(){
 
 
 		case $2 in
+			ida_x86 )
+
+				# if not set debug port. use 23946 as default port
+				if [[ -z "$3" ]]; then
+					XADBILOG "Not set debug port, Use 23946 as default port"
+					debugPort="23946"
+				else
+					XADBILOG "Set the debug port:$3"
+					debugPort=$3
+				fi
+
+				# 32bit app ida debug
+				server=`adb shell "[ -f /data/local/tmp/android_x86_server ] && echo "1" || echo "0"" | tr -d '\r'`
+
+				if [[ "$server" = "0" ]]; then
+					xadb sudo "cp /sdcard/xia0/debug-server/android_x86_server /data/local/tmp/"
+				fi
+				
+				xadb sudo "chmod 777 /data/local/tmp/android_x86_server"
+				
+				xadb forward tcp:$debugPort tcp:$debugPort
+
+				xadb sudo "/data/local/tmp/android_x86_server -p$debugPort"
+				;;
+
 			ida )
 
 				# if not set debug port. use 23946 as default port
@@ -671,9 +705,8 @@ function xadb(){
 		file1=$2
 		file2=$3
 
-		isRemoteFile=`adb shell "[ -f $file1 ] && echo "1" || echo "0"" | tr -d '\r'`
-		echo $isRemoteFile
-		if [[ "$isRemoteFile" = "0" ]]; then
+		# isRemoteFile=`adb shell "[ -f $file1 ] && echo "1" || echo "0"" | tr -d '\r'`
+		if [[ -f "$file1" || -d "$file1" ]]; then
 			echo "$file1 is local file, so copy it to device"
 			xadb push "$file1" "$file2"
 		else
@@ -691,6 +724,12 @@ function xadb(){
 		cmd=${@:2:$#}
 		XADBILOG "Run \"$cmd\""
 
+		XADBISEMULATOR 
+		if [[ $? == 1 ]]; then	
+			xadb shell "$cmd"
+			return
+		fi
+
 		xadb shell "su -c $cmd" #2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
@@ -702,6 +741,13 @@ function xadb(){
 	# xdo == sudo. just for clean output cmd. NO "Run $cmd" Log
 	if [[ "$1" = "xdo" ]]; then
 		cmd=${@:2:$#}
+
+		XADBISEMULATOR 
+		if [[ $? == 1 ]]; then	
+			xadb shell "$cmd"
+			return
+		fi
+
 		xadb shell su -c "$cmd" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
@@ -817,6 +863,12 @@ function xadb(){
 }
 
 function adb(){
+
+	if [[ "$1" = "kill-server" ]]; then
+		XADB kill-server
+		return;
+	fi
+
 	if [[ "$1" = "serial" ]]; then
 		if [[ "$2" = "-s" || "$2" = "set" ]]; then
 
