@@ -337,7 +337,18 @@ function xadb(){
 				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
 				xadb xdo "cat /proc/$APPPID/maps" | grep '\.so'
 				;;
+			maps )
+				if [ -z "$3" ]; then
+					APPPID=`xadb app pid | tr -d '\r'`
 
+				else
+					APPPID=$3
+				fi
+
+				APPID=`adb app package | tr -d '\r'`
+				XADBILOG "============================[PID=$APPPID PACKAGE:$APPID]=================================="
+				xadb xdo "cat /proc/$APPPID/maps"
+				;;
 			dump )
 				XADBILOG "Dex Dump Power by hluwa, Please wait about 5 second...."
 				# auto launch frida base device abi
