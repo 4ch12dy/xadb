@@ -873,6 +873,29 @@ function xadb(){
 	XADB $@
 }
 
+function XADBTimeout() {
+
+    time=$1
+	# test -f $XADB_DEVICE_SERIAL && $ADB -s $(cat $XADB_DEVICE_SERIAL) $@ || $ADB -d $@
+	if [[ -f $XADB_DEVICE_SERIAL ]]; then
+		tmp_serial=$(cat $XADB_DEVICE_SERIAL)
+		payload="$ADB -s $tmp_serial shell uname"
+	else
+		payload="$ADB -d shell uname"
+	fi
+	# echo $payload
+    # start the command in a subshell to avoid problem with pipes
+    # (spawn accepts one command)
+    command="$SHELL -c \"$payload > /dev/null\""
+
+    expect -c "set echo \"-noecho\"; set timeout $time; spawn -noecho $command; expect timeout { exit 1 } eof { exit 0 }"    
+
+    if [ $? = 1 ] ; then
+        XADBELOG "timeout after ${time} seconds, will kill-server"
+		XADB kill-server
+    fi
+}
+
 function adb(){
 
 	if [[ "$1" = "kill-server" ]]; then
@@ -902,7 +925,7 @@ function adb(){
 			return
 		fi
 	fi
-
+	XADBTimeout 5
 	XADBCheckxia0
 	XADBCheckUpdate
 	xadb $@
