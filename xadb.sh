@@ -889,6 +889,7 @@ function xadb(){
 		printf " %-8s \n\t %-35s 		 \n" "pstree" "show the process tree of device"
 		printf " %-8s \n\t %-35s %-20s \n" "sign" "[local-apk-file]" "show sign of local apk file"
 		printf " %-8s \n\t %-35s %-20s \n" "agent" "[clean/reinstall]" "clean caches and reinstall agent"
+		printf " %-8s \n\t %-35s		 \n" "restart" "soft reboot:kill all process except init"
 		printf " %-8s \n\t %-35s		 \n" "-h" "show this help usage"
 		printf " %-8s \n\t %-35s		 \n" "update" "update xadb for new version!"
 		return
