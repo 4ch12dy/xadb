@@ -723,9 +723,9 @@ function xadb(){
 		else
 			filename=${file1##*/}
 			echo "$file1 is remote file, so copy it to local"
-			xadb sudo "cp $file1 /sdcard"
+			xadb sudo "cp -r $file1 /sdcard"
 			xadb pull "/sdcard/$filename" "$file2"
-			xadb sudo "rm /sdcard/$filename"
+			xadb sudo "rm -r /sdcard/$filename"
 		fi
 		return
 	fi
@@ -775,6 +775,23 @@ function xadb(){
 		# echo $process_name
 		if [[ -n "$live" && "$live" = "$process_name" ]]; then
 			xadb sudo "killall -9 $process_name"
+		fi
+		return
+	fi
+
+
+	if [[ "$1" = "ps" ]]; then
+		process_name=$2
+		if [[ -n "$process_name" ]]; then
+			xadb sudo "ps -ef" | grep -i $process_name
+		fi
+		return
+	fi
+
+	if [[ "$1" = "maps" ]]; then
+		apppid="$2"
+		if [[ -n "$apppid" ]]; then
+			xadb sudo "cat /proc/$apppid/maps"
 		fi
 		return
 	fi
@@ -830,6 +847,13 @@ function xadb(){
 		SIGN_RSA=`unzip -l $apk_file | grep "META-INF.*\.RSA" | awk  '{printf $4}'`
 		# echo $SIGN_RSA
 		unzip -p $apk_file $SIGN_RSA | keytool -printcert
+		return
+	fi
+
+
+	if [ "$1" = "restart" ];then
+		XADBILOG "kill all process except init"
+		adb sudo "kill -- -1"
 		return
 	fi
 
