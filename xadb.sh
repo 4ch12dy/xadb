@@ -319,6 +319,19 @@ function xadb(){
 				fi
 				xadb shell dumpsys package $APP_ID
 				;;
+
+			version )
+				if [ -z "$3" ]; then
+					APP_ID=`xadb app package | tr -d '\r'`
+
+				else
+					APP_ID=$3
+				fi
+					version_prefix="versionName="
+				    version=`xadb shell dumpsys package $APP_ID | grep versionName= | tr -d " "`
+				    version_=${version:${#version_prefix}:${#version}}
+				    echo $version_
+				;;
 			# get cureet screenshot 
 			screen )
 				xadb shell screencap -p > screen.png
@@ -380,15 +393,16 @@ function xadb(){
 				XADBILOG "Dex Dump Done! Happy Reversing~"
 				;;
 			*)
-				APPID=`xadb app package`
-				APPPID=`xadb app pidAll`
-				APPACTIVITY=`xadb app activity`
-				APPMAINACTIVITY=`xadb app activity main`
-				APPDIR=`xadb app info | grep codePath`
-				APPDIR=${APPDIR##*codePath=}
-				APPDATADIR=`xadb app info | grep dataDir`
-				APPDATADIR=${APPDATADIR##*dataDir=}
-				echo -e "app=$APPID\npid=$APPPID\nactivity=$APPACTIVITY\nmainActivity=$APPMAINACTIVITY\nappdir=$APPDIR\ndatadir=$APPDATADIR"
+				APP_ID=`xadb app package`
+				APP_VERSION=$(xadb app version)
+				APP_PIDS=`xadb app pidAll`
+				APPA_CTIVITY=`xadb app activity`
+				APP_MAINACTIVITY=`xadb app activity main`
+				APP_DIR=`xadb app info | grep codePath`
+				APP_DIR=${APP_DIR##*codePath=}
+				APP_DATADIR=`xadb app info | grep dataDir`
+				APP_DATADIR=${APP_DATADIR##*dataDir=}
+				echo -e "app=$APP_ID\nversion=$APP_VERSION\npid=$APP_PIDS\nactivity=$APPA_CTIVITY\nmainActivity=$APP_MAINACTIVITY\nappdir=$APP_DIR\ndatadir=$APP_DATADIR"
 				;;
 		esac
 
@@ -741,10 +755,10 @@ function xadb(){
 			return
 		fi
 
-		xadb shell "su -c $cmd" #2>/dev/null;
+		xadb shell "su -c \"$cmd\"" #2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
-			xadb shell su 0/0 "$cmd" #2>/dev/null;
+			xadb shell su 0/0 "\"$cmd\"" #2>/dev/null;
 		fi
 		return
 	fi
@@ -759,7 +773,7 @@ function xadb(){
 			return
 		fi
 
-		xadb shell su -c "$cmd" 2>/dev/null;
+		xadb shell su -c "\"$cmd\"" 2>/dev/null;
 
 		if [[ "$?" != "0" ]]; then
 			xadb shell su 0/0 "$cmd" 2>/dev/null;
@@ -866,6 +880,30 @@ function xadb(){
 		if [[ "$2" = "clean" ]]; then
 			XADBCheckxia0 clean
 		fi
+		return
+	fi
+
+	if [ "$1" = "sslkill" ];then
+		args=${@:2:$#}
+		frida_args="$args"
+		if [[ "$args" =~ "-h" ]]; then
+			XADBELOG "[usage] -f package_id [-D device_id / -U] -p pid"
+			return
+		fi 
+
+		if [[ ! "$args" =~ "-D" && ! "$args" =~ "-U" ]]; then
+			XADBILOG "not special device, use -U"
+			frida_args="$frida_args -U"
+		fi
+
+		if [[ ! "$args" =~ "-f" ]]; then
+			apppid=`adb app package`
+			XADBILOG "not special -f package, use $apppid"
+			frida_args="$frida_args -f $apppid"
+		fi
+
+
+		frida -l "$XADB_ROOT_DIR/script/pinning.js" $frida_args --no-pause 
 		return
 	fi
 
